@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  .m { font-family: ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace; }
+  table { border-collapse: collapse; width: 100%; }
+  th { text-align: left; font-weight: 400; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; padding: 0 14px 7px 0; border-bottom: 1px solid #d6d6d6; }
+  td { padding: 8px 14px 8px 0; border-bottom: 1px solid #ededeb; font-size: 13px; vertical-align: top; }
+</style>
+</helmet>
+
+<!-- Snaps page: list table, single-snap detail (+ notes & fork), or version tree.
+     Driven by the `vm` prop the shell passes in. -->
+<div>
+
+  <!-- LIST TABLE -->
+  <sc-if value="{{ vm.isTable }}">
+    <table style="margin-top: 18px;">
+      <thead><tr>
+        <th>Scenario</th><th>Version</th><th>Runtime</th><th>Model</th><th>Parent</th><th>Created</th><th>Notes</th>
+      </tr></thead>
+      <tbody>
+        <sc-for list="{{ vm.rows }}" as="s" hint-placeholder-count="6">
+          <tr onClick="{{ s.onClick }}" style="cursor: pointer;" style-hover="background: #f7f7f6;">
+            <td class="m" style="font-weight: 700;">{{ s.scen }}</td>
+            <td class="m">{{ s.ver }}</td>
+            <td class="m" style="color: #555;">{{ s.runtime }}</td>
+            <td class="m" style="color: #555;">{{ s.model }}</td>
+            <td class="m" style="color: #555;">{{ s.parent }}</td>
+            <td class="m" style="color: #555;">{{ s.created }}</td>
+            <td class="m"><span style="color: {{ s.notesColor }};">{{ s.notes }}</span></td>
+          </tr>
+        </sc-for>
+      </tbody>
+    </table>
+    <div style="font-size: 12px; color: #9a9a96; margin-top: 12px;"><span style="color: #8a6d1f;">*</span> = unpushed local notes. Click a row for detail.</div>
+  </sc-if>
+
+  <!-- DETAIL -->
+  <sc-if value="{{ vm.isDetail }}">
+    <div style="margin-top: 18px; border: 1px solid #d6d6d6; max-width: 600px;">
+      <sc-for list="{{ vm.detail.rows }}" as="r" hint-placeholder-count="9">
+        <div style="display: flex; border-bottom: 1px solid #ededeb;">
+          <div style="flex: none; width: 116px; padding: 7px 12px; color: #8a8a86; font-size: 12px; background: #fafafa; border-right: 1px solid #ededeb;">{{ r.k }}</div>
+          <div class="m" style="padding: 7px 12px; font-size: 12.5px; color: #333; min-width: 0; word-break: break-all;"><span style="color: {{ r.color }};">{{ r.v }}</span></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top: 14px;">
+      <button onClick="{{ vm.detail.onFork }}" style="background: #1a1a1a; color: #fff; border: 1px solid #1a1a1a; padding: 8px 14px; border-radius: 2px; font-family: inherit; font-size: 13px; cursor: pointer;">Fork this snap →</button>
+    </div>
+    <div style="margin-top: 18px;">
+      <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 8px;">Notes <span style="color: #8a6d1f;">{{ vm.detail.notesFlag }}</span></div>
+      <sc-for list="{{ vm.detail.notes }}" as="n" hint-placeholder-count="2">
+        <div style="border-left: 2px solid #e2e2e0; padding: 2px 0 8px 12px; margin-bottom: 2px;">
+          <div class="m" style="font-size: 11px; color: #9a9a96;">{{ n.t }}</div>
+          <div style="font-size: 13px; color: #333;">{{ n.x }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- VERSION TREE -->
+  <sc-if value="{{ vm.isTree }}">
+    <div class="m" style="margin-top: 18px; font-size: 12.5px; line-height: 1.7;">
+      <sc-for list="{{ vm.treeLines }}" as="t" hint-placeholder-count="9">
+        <div style="{{ t.style }}; white-space: pre;"><span style="font-weight: {{ t.weight }}; color: {{ t.color }};">{{ t.head }}</span><span style="color: #8a8a86;">{{ t.date }}</span><span style="color: #6a6a6a;">{{ t.msg }}</span><span style="color: #8a6d1f;">{{ t.dirty }}</span></div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+</body>
+</html>

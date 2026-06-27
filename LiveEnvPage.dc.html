@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  .m { font-family: ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace; }
+</style>
+</helmet>
+
+<!-- Live observation console for one env. `vm` is the `live` view-model.
+     Full-width: own header + roster / event-stream / budget+modules columns. -->
+<div style="display: flex; flex-direction: column; min-height: 100vh;">
+
+  <!-- header -->
+  <div style="padding: 14px 20px; border-bottom: 1px solid #d6d6d6;">
+    <a onClick="{{ vm.onBack }}" style="font-size: 12px; color: #1a4fb4; text-decoration: none; cursor: pointer;">{{ vm.backLabel }}</a>
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 6px;">
+      <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;">
+        <span style="font-size: 22px; font-weight: 700;">{{ vm.name }}</span>
+        <span style="font-size: 13px; color: {{ vm.statusColor }};">● {{ vm.statusLabel }}</span>
+        <span class="m" style="font-size: 13px; color: #555;">runtime {{ vm.runtime }}</span>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button onClick="{{ vm.onToggle }}" style="background: #fff; border: 1px solid #bdbdbd; padding: 6px 12px; border-radius: 2px; cursor: pointer; color: #222; font-family: inherit; font-size: 13px;" style-hover="background: #f0f0ee;">{{ vm.toggleLabel }}</button>
+        <button style="background: #fff; border: 1px solid #bdbdbd; padding: 6px 12px; border-radius: 2px; cursor: pointer; color: #222; font-family: inherit; font-size: 13px;" style-hover="background: #f0f0ee;">Take snap</button>
+        <button style="background: #fff; border: 1px solid #cdbcb8; padding: 6px 12px; border-radius: 2px; cursor: pointer; color: #9a3221; font-family: inherit; font-size: 13px;" style-hover="background: #faf0ee;">Kill</button>
+      </div>
+    </div>
+    <div class="m" style="display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 12px; font-size: 11.5px; color: #8a8a86;">
+      <span>snap <span style="color: #333;">{{ vm.snap }}</span></span>
+      <span>host <span style="color: #333;">{{ vm.host }}</span></span>
+      <span>runtime <span style="color: #333;">{{ vm.runtimeName }}</span></span>
+      <span>agents <span style="color: #333;">{{ vm.agentCount }}</span></span>
+      <span>modules <span style="color: #333;">{{ vm.modulesLabel }}</span></span>
+    </div>
+  </div>
+
+  <!-- 3 columns -->
+  <div style="flex: 1; display: flex; min-height: 0;">
+
+    <!-- roster -->
+    <div style="flex: none; width: 232px; border-right: 1px solid #d6d6d6; padding: 14px 16px; overflow: auto;">
+      <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 10px;">Agents — share 1 budget</div>
+      <sc-for list="{{ vm.agents }}" as="a" hint-placeholder-count="3">
+        <div style="border-top: 1px solid #e2e2e0; padding: 11px 0;">
+          <div style="display: flex; align-items: baseline; gap: 7px;">
+            <span style="font-size: 11px; color: {{ a.dotColor }};">{{ a.dot }}</span>
+            <span class="m" style="font-weight: 700; color: {{ a.nameColor }};">{{ a.id }}</span>
+            <span style="margin-left: auto; font-style: italic; color: #6a6a6a;">{{ a.persona }}</span>
+          </div>
+          <div class="m" style="font-size: 11px; color: #8a8a86; margin: 6px 0 5px;">{{ a.statusText }}</div>
+          <div style="height: 3px; background: #e6e6e3;"><div style="width: {{ a.pct }}%; height: 100%; background: {{ a.barColor }};"></div></div>
+          <div class="m" style="font-size: 11px; color: #8a8a86; margin-top: 4px;">spent {{ a.spent }}</div>
+        </div>
+      </sc-for>
+      <div style="border-top: 1px solid #e2e2e0; padding-top: 11px; font-size: 11px; color: #9a9a96; line-height: 1.6;">Agents interact only via messaging. Memory, workspace and scratchpad are private to each.</div>
+    </div>
+
+    <!-- stream -->
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center; gap: 16px; padding: 10px 18px; border-bottom: 1px solid #d6d6d6; font-size: 13px;">
+        <span style="font-weight: 700; border-bottom: 2px solid #1a1a1a; padding-bottom: 9px; margin-bottom: -11px;">Everything</span>
+        <span style="color: #6a6a6a;">Gateway</span>
+        <span style="color: #6a6a6a;">Messages</span>
+        <span style="color: #6a6a6a;">Budget</span>
+      </div>
+      <sc-if value="{{ vm.dormant }}">
+        <div style="padding: 12px 18px; background: #faf6ec; border-bottom: 1px solid #ece3cc; font-size: 12.5px; color: #8a6d1f;">Agents dormant — gateway stopped. Wake to resume the run.</div>
+      </sc-if>
+      <div class="m" style="flex: 1; overflow: auto; font-size: 12.5px; line-height: 1.5;">
+        <sc-for list="{{ vm.stream }}" as="e" hint-placeholder-count="8">
+          <div style="display: flex; gap: 12px; padding: {{ e.pad }} 18px; background: {{ e.bg }};">
+            <span style="flex: none; color: #a0a09c; width: 60px;">{{ e.time }}</span>
+            <div style="min-width: 0;">
+              <span style="font-weight: 700;">{{ e.who }}</span><span style="color: #9a9a96;">{{ e.meta }}</span><span style="color: #9a9a96;">{{ e.label }}</span><span style="font-weight: 700;">{{ e.target }}</span><span style="color: #333;">{{ e.arg }}</span>
+              <sc-if value="{{ e.body }}"><div style="color: #333; margin-top: 1px;">{{ e.body }}</div></sc-if>
+              <sc-if value="{{ e.body2 }}"><div style="color: #6a6a6a; margin-top: 1px;">{{ e.body2 }}</div></sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div class="m" style="padding: 9px 18px; border-top: 1px solid #d6d6d6; font-size: 12px; color: #8a8a86; display: flex; gap: 18px;">
+        <span style="color: #1a4fb4; cursor: pointer;">exec ›</span>
+        <span>watch: agents · gateway · everything</span>
+        <span style="margin-left: auto; color: #1a4fb4; cursor: pointer;">replay run</span>
+        <span style="color: #1a4fb4; cursor: pointer;">diff fork</span>
+      </div>
+    </div>
+
+    <!-- budget + modules -->
+    <div style="flex: none; width: 256px; border-left: 1px solid #d6d6d6; padding: 14px 16px; overflow: auto;">
+      <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 8px;">Shared budget</div>
+      <div style="display: flex; align-items: baseline; gap: 8px;">
+        <span class="m" style="font-size: 24px; font-weight: 700;">{{ vm.budget.used }}</span>
+        <span class="m" style="font-size: 12px; color: #8a8a86;">/ {{ vm.budget.limit }} limit</span>
+      </div>
+      <div style="height: 8px; background: #e6e6e3; margin: 9px 0 5px; display: flex; border: 1px solid #dadad7;">
+        <sc-for list="{{ vm.budget.splits }}" as="s" hint-placeholder-count="3">
+          <div style="width: {{ s.w }}%; background: {{ s.c }};"></div>
+        </sc-for>
+      </div>
+      <div class="m" style="font-size: 11px; color: #8a8a86;">remaining <span style="color: {{ vm.budget.remColor }};">{{ vm.budget.remaining }}</span> · shared by {{ vm.agentCount }}</div>
+
+      <sc-if value="{{ vm.hasMarket }}">
+        <div style="border-top: 1px solid #e2e2e0; margin-top: 16px; padding-top: 14px;">
+          <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 9px;">Prediction market</div>
+          <div class="m" style="font-size: 12px; color: #444; line-height: 1.9;">
+            <div style="display: flex; justify-content: space-between;"><span>cooperate</span><span>{{ vm.market.coop }}</span></div>
+            <div style="height: 3px; background: #e6e6e3; margin: 1px 0 6px;"><div style="width: {{ vm.market.coopW }}%; height: 100%; background: #555;"></div></div>
+            <div style="display: flex; justify-content: space-between;"><span>defect</span><span>{{ vm.market.defect }}</span></div>
+            <div style="height: 3px; background: #e6e6e3; margin: 1px 0 0;"><div style="width: {{ vm.market.defectW }}%; height: 100%; background: #999;"></div></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vm.hasContracts }}">
+        <div style="border-top: 1px solid #e2e2e0; margin-top: 16px; padding-top: 14px;">
+          <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 9px;">Enforceable contracts</div>
+          <sc-for list="{{ vm.contracts }}" as="c" hint-placeholder-count="1">
+            <div class="m" style="font-size: 12px; color: #444; line-height: 1.6;">{{ c.id }} &nbsp;{{ c.parties }}<div style="color: #8a8a86;">{{ c.terms }} · <span style="color: #1f7a3d;">{{ c.status }}</span></div></div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vm.hasScore }}">
+        <div style="border-top: 1px solid #e2e2e0; margin-top: 16px; padding-top: 14px;">
+          <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 9px;">Scenario state · round {{ vm.score.round }}</div>
+          <sc-for list="{{ vm.score.rows }}" as="r" hint-placeholder-count="2">
+            <div class="m" style="font-size: 12px; color: #444; display: flex; justify-content: space-between; line-height: 1.9;"><span>{{ r.agent }}</span><span style="font-weight: 700;">{{ r.val }}</span></div>
+          </sc-for>
+          <div class="m" style="font-size: 11px; color: #9a9a96; margin-top: 6px;">{{ vm.score.note }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vm.bigCorpus }}">
+        <div class="m" style="border-top: 1px solid #e2e2e0; margin-top: 16px; padding-top: 12px; font-size: 11px; color: #8a8a86; line-height: 1.7;">corpus 50 GB shared — forks and snapshots reference it, they don’t copy it.</div>
+      </sc-if>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

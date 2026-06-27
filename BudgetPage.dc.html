@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  .m { font-family: ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace; }
+  table { border-collapse: collapse; width: 100%; }
+  th { text-align: left; font-weight: 400; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; padding: 0 14px 7px 0; border-bottom: 1px solid #d6d6d6; }
+  td { padding: 8px 14px 8px 0; border-bottom: 1px solid #ededeb; font-size: 13px; vertical-align: top; }
+</style>
+</helmet>
+
+<!-- Budget page: per-env credit usage. `vm.rows` from the shell. -->
+<table style="margin-top: 18px; max-width: 520px;">
+  <thead><tr><th>Env</th><th>Used</th><th>Limit</th><th>Remaining</th></tr></thead>
+  <tbody>
+    <sc-for list="{{ vm.rows }}" as="b" hint-placeholder-count="5">
+      <tr>
+        <td class="m" style="font-weight: 700;">{{ b.env }}</td>
+        <td class="m" style="color: #555;">{{ b.used }}</td>
+        <td class="m" style="color: #555;">{{ b.limit }}</td>
+        <td class="m"><span style="color: {{ b.remColor }};">{{ b.remaining }}</span></td>
+      </tr>
+    </sc-for>
+  </tbody>
+</table>
+</x-dc>
+</body>
+</html>
