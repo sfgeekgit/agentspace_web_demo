@@ -80,43 +80,47 @@
           <h1 style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: #0f172a; margin: 34px 0 6px;">Agentspace</h1>
           <p style="font-size: 19px; line-height: 1.4; color: #334155; margin: 0 0 4px;">A reproducible testbed for AI agents that interact.</p>
 
-          <!-- SHOVELS callout -->
-          <div style="margin-top: 22px; background: #f0f4ff; border: 1px solid #dbe3ff; border-left: 3px solid #6366f1; border-radius: 12px; padding: 18px 22px;">
-            <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6366f1; margin-bottom: 8px;">Shovels</div>
-            <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #334155;"><i>“Empirical work on the safety of multi-principal, multi-agent deployments is bottlenecked by the need for realistic and reproducible testbeds.”</i><br><span style="display: block; margin-top: 8px; color: #64748b; font-size: 13px;">The #1 request in DeepMind's new $10M multi-agent AI safety funding call</span></p>
+          <!-- INTRO -->
+          <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
+            <p style="margin: 0 0 16px;"><b>Most tools test one AI agent at a time. Agentspace tests what agents do to each other.</b></p>
+            <p style="margin: 0 0 16px;">Agentspace is an open-source platform for running multi-agent experiments in reproducible, forkable worlds. It exists to make the behavior of interacting AI agents something you can observe empirically, and then test again.</p>
+            <p style="margin: 0;">There are plenty of ways to evaluate a single agent. The dynamics that emerge between agents, negotiation, alliance, manipulation, resource competition, are much harder to study and reproduce. An interesting behavior that appears once in a long run is an anecdote. The same behavior, reproduced across twenty forks of the same world with one variable changed, is a result. Agentspace is built to turn anecdotes into results.</p>
           </div>
 
-          <!-- WHAT IT IS -->
-          <!-- WHAT IT IS — top -->
+          <!-- HOW IT WORKS -->
           <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
-            <p style="margin: 0;"><b>Most tools test one AI agent at a time. Agentspace tests what agents do to each other.</b> Agentspace is an open-source platform for running multi-agent experiments in reproducible, forkable worlds. It exists to make the cooperation and alignment of interacting AI agents something you can observe and test empirically.</p>
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px;">How it works</div>
+            <p style="margin: 0 0 4px;">A <b>World</b> is a self-contained environment holding one or more agents: their memories, their messages, their instructions, and the situation they are in. You can <b>Snapshot</b> a running world at any moment, then <b>fork</b> the snapshot into a fresh copy. Change anything, something big or as small as a single character, or nothing at all, then run it again. Fork one snapshot into twenty and run the variants side by side.</p>
+            <p style="margin: 16px 0; text-align: center;"><span class="m" style="display: inline-block; background: #f0f4ff; border: 1px solid #dbe3ff; border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: #4f46e5;">Run → snapshot → tweak → fork → compare</span></p>
+            <p style="margin: 0;">Every snapshot is a complete container image published to a public registry, so any researcher can pull a world down and reproduce or extend an experiment exactly. Your colleague doesn't re-implement your setup from the methods section. They fork it.</p>
           </div>
 
-          <!-- WHAT IT IS — middle (why it matters) -->
+          <!-- THE PIECES -->
           <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
-            <p style="margin: 0 0 16px;">Systems to study how agents behave together are a public good that markets currently underproduce. Current incentives lead to building capable single agents for profit. Studying multi-agent cooperation is of academic interest. But that is rapidly changing.</p>
-            <p style="margin: 0;">And research is just the beachhead. Big companies want this for the same reasons the safety field does, interacting agents fail in ways you can't see coming, and the only defense is to make that behavior observable and reproducible before it reaches the world. A commercially successful Agentspace means more multi-agent systems get tested for collusion, manipulation, and runaway coordination before they ship. Incentives point the same way whoever the buyer is.</p>
-          </div>
-
-          <!-- WHAT IT IS — bottom (how it works) -->
-          <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
-            <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px;">How Agentspace works</div>
-            <p style="margin: 0 0 16px;">A <b>World</b> is a self-contained environment holding one or more agents. Their memories, their messages, their instructions, and the situation they are in. You can <b>Snapshot</b> a running world at any moment, then <b>fork</b> the snapshot into a fresh copy. You can then change anything about the world, something big or as small as a single character, or nothing at all, then run it again. <b>Run → snapshot → tweak → fork → compare</b> is the whole loop.</p>
             <p style="margin: 0 0 8px;">The platform is built from orthogonal pieces you mix and match:</p>
             <ul style="margin: 0 0 16px; padding-left: 20px;">
-              <li style="margin-bottom: 8px;"><b>Scenarios</b> define a situation. Define the world for agents however you want. Common examples are deception games, real world tasks, iterated prisoner’s dilemma, whatever. Scenarios can be bare simple or include complex custom code.</li>
-              <li style="margin-bottom: 8px;"><b>Modules</b> add optional standard mechanics that may be useful across multiple scenarios: enforceable contracts, prediction markets, bounded secret side-channels, agent self-cloning, and more.</li>
-              <li style="margin-bottom: 0;"><b>Personas</b> set each agent’s starting character, choose a “soul” a runtime and any backend model.</li>
+              <li style="margin-bottom: 8px;"><b>Scenarios</b> define a situation. Deception games, iterated prisoner's dilemma, open-ended tasks, cooperation under scarcity. Scenarios can be bare simple or include complex custom code, and designing your own is a first-class use case.</li>
+              <li style="margin-bottom: 8px;"><b>Modules</b> add optional mechanics that work across scenarios: enforceable contracts, prediction markets, bounded secret side-channels, agent self-cloning, and more.</li>
+              <li style="margin-bottom: 0;"><b>Personas</b> set each agent's starting character, its "soul." Any persona can run on any backend model, inside any runtime, in any role. Mix and match any combination.</li>
             </ul>
-            <p style="margin: 0;">Everything is logged. Every message, every tool call, every thought an agent writes to its scratchpad, so you can review a run afterward or live-tail it as it happens. The most valuable findings tend to be “that’s strange... why did it keep doing that?”, and agentspace is built to surface those moments and let you re-run them to test whether the effect is real.</p>
+            <p style="margin: 0;">Everything is logged. Every message, every tool call, every thought an agent writes to its scratchpad. Review a run after the fact, live-tail it as it happens, or chat with the agents mid-run.</p>
+          </div>
+
+          <!-- FOR THEORISTS AND EMPIRICISTS -->
+          <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px;">For theorists and empiricists both</div>
+            <p style="margin: 0 0 16px;">If you have a formal model of when agents cooperate, defect, or deceive, Agentspace is where the model meets running agents. Build the incentive structure and watch. If you work empirically, it is a lab for open-ended exploration: build a world rich enough for surprising dynamics, watch, and when something strange happens, re-run it until you know whether it's real. The most valuable findings tend to be "that's strange... why did it keep doing that?" rather than clean confirmations of a hypothesis.</p>
+            <p style="margin: 0 0 16px;">Some systems are too large for theory alone. A game theorist can sometimes solve the three-agent version of a situation on paper, exactly, while the three-hundred-agent version is analytically hopeless. That regime, too many agents for theory, too strange for intuition, is exactly what Agentspace is for: run the sim, fork it, vary one thing, and run it again twenty times before lunch.</p>
+            <p style="margin: 0 0 16px;">Some questions it is suited to: How do agents share a scarce resource, like a common inference budget on a single API key? When do agents with hidden goals get caught, and by whom? What happens when agents can make binding commitments, or clone themselves, or bet on each other's behavior? Which cooperation results survive a change of model, persona, or scenario framing?</p>
+            <p style="margin: 0;">The study of how AI agents behave together is a public good that markets underproduce. This is infrastructure for producing it anyway.</p>
           </div>
 
           <!-- DEMO NOTICE — big and clear, at the bottom -->
           <div style="margin-top: 22px; background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 16px; padding: 22px 26px;">
             <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #0d9488; margin-bottom: 8px;">You’re viewing the web demo</div>
-            <p style="margin: 0 0 14px; font-size: 15px; line-height: 1.6; color: #0f766e;">This is a preview, a demo of what the command line tool can do. The menu driven, <b>functional command-line tool</b> is open-source on GitHub.</p>
+            <p style="margin: 0 0 14px; font-size: 15px; line-height: 1.6; color: #0f766e;">This is a preview of what the command-line tool can do. The menu-driven, <b>functional CLI</b> is open-source on GitHub.</p>
             <a href="https://github.com/sfgeekgit/agentspace/" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #1f2937; color: #fff; font-size: 14px; font-weight: 600; padding: 11px 18px; border-radius: 10px; text-decoration: none;" style-hover="background: #111827;">github.com/sfgeekgit/agentspace →</a>
-            <p style="margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: #0f766e;">Open-source core originated with a short term grant from the <b>Foresight Institute</b>.<br>Independent project; ongoing.</p>
+            <p style="margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: #0f766e;">Open-source core originated with a grant from the <b>Foresight Institute</b>.<br>Independent project; ongoing.</p>
           </div>
 
         </div>
@@ -183,43 +187,48 @@
             <!-- DEMO NOTICE — top of the About page -->
             <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 16px; padding: 22px 26px;">
               <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #0d9488; margin-bottom: 8px;">You’re viewing the web demo</div>
-              <p style="margin: 0 0 14px; font-size: 15px; line-height: 1.6; color: #0f766e;">This is a preview, a demo of what the command line tool can do. The menu driven, <b>functional command-line tool</b> is open-source on GitHub.</p>
+              <p style="margin: 0 0 14px; font-size: 15px; line-height: 1.6; color: #0f766e;">This is a preview of what the command-line tool can do. The menu-driven, <b>functional CLI</b> is open-source on GitHub.</p>
               <a href="https://github.com/sfgeekgit/agentspace/" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #1f2937; color: #fff; font-size: 14px; font-weight: 600; padding: 11px 18px; border-radius: 10px; text-decoration: none;" style-hover="background: #111827;">github.com/sfgeekgit/agentspace →</a>
-              <p style="margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: #0f766e;">Open-source core originated with a short term grant from the <b>Foresight Institute</b>.<br>Independent project; ongoing.</p>
+              <p style="margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: #0f766e;">Open-source core originated with a grant from the <b>Foresight Institute</b>.<br>Independent project; ongoing.</p>
             </div>
 
             <!-- TITLE -->
             <h1 style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: #0f172a; margin: 34px 0 6px;">Agentspace</h1>
             <p style="font-size: 19px; line-height: 1.4; color: #334155; margin: 0 0 4px;">A reproducible testbed for AI agents that interact.</p>
 
-            <!-- SHOVELS callout -->
-            <div style="margin-top: 22px; background: #f0f4ff; border: 1px solid #dbe3ff; border-left: 3px solid #6366f1; border-radius: 12px; padding: 18px 22px;">
-              <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6366f1; margin-bottom: 8px;">Shovels</div>
-              <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #334155;"><i>“Empirical work on the safety of multi-principal, multi-agent deployments is bottlenecked by the need for realistic and reproducible testbeds.”</i><br><span style="display: block; margin-top: 8px; color: #64748b; font-size: 13px;">The #1 request in DeepMind's new $10M multi-agent AI safety funding call</span></p>
+            <!-- INTRO -->
+            <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
+              <p style="margin: 0 0 16px;"><b>Most tools test one AI agent at a time. Agentspace tests what agents do to each other.</b></p>
+              <p style="margin: 0 0 16px;">Agentspace is an open-source platform for running multi-agent experiments in reproducible, forkable worlds. It exists to make the behavior of interacting AI agents something you can observe empirically, and then test again.</p>
+              <p style="margin: 0;">There are plenty of ways to evaluate a single agent. The dynamics that emerge between agents, negotiation, alliance, manipulation, resource competition, are much harder to study and reproduce. An interesting behavior that appears once in a long run is an anecdote. The same behavior, reproduced across twenty forks of the same world with one variable changed, is a result. Agentspace is built to turn anecdotes into results.</p>
             </div>
 
-            <!-- WHAT IT IS — top -->
+            <!-- HOW IT WORKS -->
             <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
-              <p style="margin: 0;"><b>Most tools test one AI agent at a time. Agentspace tests what agents do to each other.</b> Agentspace is an open-source platform for running multi-agent experiments in reproducible, forkable worlds. It exists to make the cooperation and alignment of interacting AI agents something you can observe and test empirically.</p>
+              <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px;">How it works</div>
+              <p style="margin: 0 0 4px;">A <b>World</b> is a self-contained environment holding one or more agents: their memories, their messages, their instructions, and the situation they are in. You can <b>Snapshot</b> a running world at any moment, then <b>fork</b> the snapshot into a fresh copy. Change anything, something big or as small as a single character, or nothing at all, then run it again. Fork one snapshot into twenty and run the variants side by side.</p>
+              <p style="margin: 16px 0; text-align: center;"><span class="m" style="display: inline-block; background: #f0f4ff; border: 1px solid #dbe3ff; border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: #4f46e5;">Run → snapshot → tweak → fork → compare</span></p>
+              <p style="margin: 0;">Every snapshot is a complete container image published to a public registry, so any researcher can pull a world down and reproduce or extend an experiment exactly. Your colleague doesn't re-implement your setup from the methods section. They fork it.</p>
             </div>
 
-            <!-- WHAT IT IS — middle (why it matters) -->
+            <!-- THE PIECES -->
             <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
-              <p style="margin: 0 0 16px;">Systems to study how agents behave together are a public good that markets currently underproduce. Current incentives lead to building capable single agents for profit. Studying multi-agent cooperation is of academic interest. But that is rapidly changing.</p>
-              <p style="margin: 0;">And research is just the beachhead. Big companies want this for the same reasons the safety field does, interacting agents fail in ways you can't see coming, and the only defense is to make that behavior observable and reproducible before it reaches the world. A commercially successful Agentspace means more multi-agent systems get tested for collusion, manipulation, and runaway coordination before they ship. Incentives point the same way whoever the buyer is.</p>
-            </div>
-
-            <!-- WHAT IT IS — bottom (how it works) -->
-            <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
-              <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px;">How Agentspace works</div>
-            <p style="margin: 0 0 16px;">A <b>World</b> is a self-contained environment holding one or more agents. Their memories, their messages, their instructions, and the situation they are in. You can <b>Snapshot</b> a running world at any moment, then <b>fork</b> the snapshot into a fresh copy. You can then change anything about the world, something big or as small as a single character, or nothing at all, then run it again. <b>Run → snapshot → tweak → fork → compare</b> is the whole loop.</p>
               <p style="margin: 0 0 8px;">The platform is built from orthogonal pieces you mix and match:</p>
               <ul style="margin: 0 0 16px; padding-left: 20px;">
-                <li style="margin-bottom: 8px;"><b>Scenarios</b> define a situation. Define the world for agents however you want. Common examples are deception games, real world tasks, iterated prisoner’s dilemma, whatever. Scenarios can be bare simple or include complex custom code.</li>
-                <li style="margin-bottom: 8px;"><b>Modules</b> add optional standard mechanics that may be useful across multiple scenarios: enforceable contracts, prediction markets, bounded secret side-channels, agent self-cloning, and more.</li>
-                <li style="margin-bottom: 0;"><b>Personas</b> set each agent’s starting character, choose a “soul” a runtime and any backend model.</li>
+                <li style="margin-bottom: 8px;"><b>Scenarios</b> define a situation. Deception games, iterated prisoner's dilemma, open-ended tasks, cooperation under scarcity. Scenarios can be bare simple or include complex custom code, and designing your own is a first-class use case.</li>
+                <li style="margin-bottom: 8px;"><b>Modules</b> add optional mechanics that work across scenarios: enforceable contracts, prediction markets, bounded secret side-channels, agent self-cloning, and more.</li>
+                <li style="margin-bottom: 0;"><b>Personas</b> set each agent's starting character, its "soul." Any persona can run on any backend model, inside any runtime, in any role. Mix and match any combination.</li>
               </ul>
-              <p style="margin: 0;">Everything is logged. Every message, every tool call, every thought an agent writes to its scratchpad, so you can review a run afterward or live-tail it as it happens. The most valuable findings tend to be “that’s strange... why did it keep doing that?”, and agentspace is built to surface those moments and let you re-run them to test whether the effect is real.</p>
+              <p style="margin: 0;">Everything is logged. Every message, every tool call, every thought an agent writes to its scratchpad. Review a run after the fact, live-tail it as it happens, or chat with the agents mid-run.</p>
+            </div>
+
+            <!-- FOR THEORISTS AND EMPIRICISTS -->
+            <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
+              <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px;">For theorists and empiricists both</div>
+              <p style="margin: 0 0 16px;">If you have a formal model of when agents cooperate, defect, or deceive, Agentspace is where the model meets running agents. Build the incentive structure and watch. If you work empirically, it is a lab for open-ended exploration: build a world rich enough for surprising dynamics, watch, and when something strange happens, re-run it until you know whether it's real. The most valuable findings tend to be "that's strange... why did it keep doing that?" rather than clean confirmations of a hypothesis.</p>
+              <p style="margin: 0 0 16px;">Some systems are too large for theory alone. A game theorist can sometimes solve the three-agent version of a situation on paper, exactly, while the three-hundred-agent version is analytically hopeless. That regime, too many agents for theory, too strange for intuition, is exactly what Agentspace is for: run the sim, fork it, vary one thing, and run it again twenty times before lunch.</p>
+              <p style="margin: 0 0 16px;">Some questions it is suited to: How do agents share a scarce resource, like a common inference budget on a single API key? When do agents with hidden goals get caught, and by whom? What happens when agents can make binding commitments, or clone themselves, or bet on each other's behavior? Which cooperation results survive a change of model, persona, or scenario framing?</p>
+              <p style="margin: 0;">The study of how AI agents behave together is a public good that markets underproduce. This is infrastructure for producing it anyway.</p>
             </div>
 
           </div>
