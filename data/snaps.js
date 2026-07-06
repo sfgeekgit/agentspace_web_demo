@@ -4,15 +4,15 @@
 window.AGENTSPACE = window.AGENTSPACE || {};
 
 window.AGENTSPACE.snaps = [
-  { scen: 'simple2agent', ver: '1.0', runtime: 'openclaw', model: 'claude-sonnet-4', parent: '—',
+  { scen: 'simple2agent', ver: '1.0', runtime: 'openclaw', model: 'claude-sonnet-5', parent: '—',
     created: '2026-05-16', notes: 0, snapId: 'b1f0a2…', tag: 'ghcr.io/agentspace/simple2agent:1.0',
     msg: 'fresh world · 2 openclaw agents · pre-chat', children: '—', taken: 'never run (World Root)',
     agents: 'a0091, a0092', modules: '—', budget: '— / —', noteList: [] },
-  { scen: 'simple2agent', ver: '2.0', runtime: 'openclaw', model: 'claude-sonnet-4', parent: '—',
+  { scen: 'simple2agent', ver: '2.0', runtime: 'openclaw', model: 'claude-sonnet-5', parent: '—',
     created: '2026-05-16', notes: 0, snapId: 'c4d1e7…', tag: 'ghcr.io/agentspace/simple2agent:2.0',
     msg: 'fresh world · 2 openclaw agents · pre-chat', children: '—', taken: 'never run (World Root)',
     agents: 'a3310, a3311', modules: '—', budget: '— / —', noteList: [] },
-  { scen: 'simple2agent', ver: '3.0', runtime: 'openclaw', model: 'claude-sonnet-4', parent: '—',
+  { scen: 'simple2agent', ver: '3.0', runtime: 'openclaw', model: 'claude-sonnet-5', parent: '—',
     created: '2026-06-10', notes: 1, dirty: true, snapId: 'e9a302…', tag: 'ghcr.io/agentspace/simple2agent:3.0',
     msg: 'visibility=all + per-agent deny (message-yes / read-no)', children: '—', taken: 'never run (World Root)',
     agents: 'a5521, a5522', modules: '—', budget: '— / —',
@@ -34,6 +34,7 @@ window.AGENTSPACE.snaps = [
     created: '2026-06-23', notes: 2, dirty: true, snapId: '3f9c1d…', tag: 'ghcr.io/agentspace/tragedy_commons:1.2.1',
     msg: 'round-4 state · contract #c-2f active', children: '—', taken: 'from env commons-3a',
     agents: 'a87329 (Magistrate), a4f1c2 (Trader), a90e3b (Hermit)',
+    corpus: '50 GB', corpusName: 'Email trove', snapDiff: '+14 MB',
     modules: 'Prediction Market, Enforceable Contracts', budget: '$1.42 / $2.00',
     noteList: [ { t: '2026-06-23 06:55', x: 'a87329 proposed binding contract — a4f1c2 accepted' },
                 { t: '2026-06-23 07:02', x: 'market favoring cooperate 0.62' } ] },

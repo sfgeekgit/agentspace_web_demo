@@ -21,93 +21,93 @@
   <sc-if value="{{ vm.isForm }}">
     <div style="max-width: 680px;">
 
-      <div class="m" style="margin-top: 20px; border: 1px solid #ededeb; background: #fafafa; padding: 11px 13px; font-size: 12px; color: #444;">
-        <div>source snap <span style="font-weight: 700; color: #111;">{{ vm.snapTag }}</span></div>
-        <div style="color: #8a8a86; margin-top: 3px;">modules {{ vm.snapModules }}</div>
-        <sc-if value="{{ vm.bigCorpus }}"><div style="color: #8a6d1f; margin-top: 4px;">This world includes a 50 GB corpus. The fork references it — the new env adds only its diff.</div></sc-if>
+      <div class="m" style="margin-top: 20px; border: 1px solid #e5e7eb; border-radius: 12px; background: #fafbfc; padding: 12px 14px; font-size: 12px; color: #475569;">
+        <div>source snap <span style="font-weight: 700; color: #0f172a;">{{ vm.snapTag }}</span></div>
+        <div style="color: #94a3b8; margin-top: 3px;">modules {{ vm.snapModules }}</div>
+        <sc-if value="{{ vm.bigCorpus }}"><div style="color: #d97706; margin-top: 4px;">This world includes a 50 GB corpus. The fork references it — the new env adds only its diff.</div></sc-if>
       </div>
 
       <div style="margin-top: 22px;">
         <div style="font-size: 13px; font-weight: 700;">New env name</div>
-        <input value="{{ vm.name }}" onInput="{{ vm.onName }}" class="m" placeholder="e.g. commons-4a" style="margin-top: 8px; width: 320px; padding: 7px 9px; border: 1px solid #bdbdbd; font-size: 13px;">
+        <input value="{{ vm.name }}" onInput="{{ vm.onName }}" class="m" placeholder="e.g. commons-4a" style="margin-top: 8px; width: 320px; padding: 9px 11px; border: 1px solid #e5e7eb; border-radius: 9px; font-size: 13px; background: #fff;">
       </div>
 
       <div style="margin-top: 22px;">
         <div style="font-size: 13px; font-weight: 700;">Budget (USD)</div>
-        <div style="font-size: 12px; color: #8a8a86; margin: 2px 0 8px;">Credit limit for the env’s freshly minted key. All agents share it. Default $2.00.</div>
-        <input value="{{ vm.budget }}" onInput="{{ vm.onBudget }}" class="m" style="width: 110px; padding: 7px 9px; border: 1px solid #bdbdbd; font-size: 13px;">
+        <div style="font-size: 12px; color: #94a3b8; margin: 2px 0 8px;">Credit limit for the env’s freshly minted key. All agents share it. Default $2.00.</div>
+        <input value="{{ vm.budget }}" onInput="{{ vm.onBudget }}" class="m" style="width: 110px; padding: 9px 11px; border: 1px solid #e5e7eb; border-radius: 9px; font-size: 13px; background: #fff;">
       </div>
 
       <div style="margin-top: 22px;">
         <div style="font-size: 13px; font-weight: 700;">Host — where does it run?</div>
-        <div style="font-size: 12px; color: #8a8a86; margin: 2px 0 10px;">Envs are isolated containers; you scale by spreading them across machines.</div>
-        <div style="display: flex; gap: 0;">
+        <div style="font-size: 12px; color: #94a3b8; margin: 2px 0 10px;">Envs are isolated containers; you scale by spreading them across machines.</div>
+        <div style="display: flex; gap: 8px;">
           <div onClick="{{ vm.onLocal }}" style="{{ vm.styleLocal }}">
             <div style="font-weight: 700; font-size: 13px;">localhost</div>
-            <div style="font-size: 11.5px; color: #6a6a6a; margin-top: 3px;">Runs on this machine. Simplest.</div>
+            <div style="font-size: 11.5px; color: #64748b; margin-top: 3px;">Runs on this machine. Simplest.</div>
           </div>
-          <div onClick="{{ vm.onExisting }}" style="{{ vm.styleExisting }} margin-left: -1px;">
+          <div onClick="{{ vm.onExisting }}" style="{{ vm.styleExisting }}">
             <div style="font-weight: 700; font-size: 13px;">existing droplet</div>
-            <div style="font-size: 11.5px; color: #6a6a6a; margin-top: 3px;">A DigitalOcean droplet you already have.</div>
+            <div style="font-size: 11.5px; color: #64748b; margin-top: 3px;">A DigitalOcean droplet you already have.</div>
           </div>
-          <div onClick="{{ vm.onNew }}" style="{{ vm.styleNew }} margin-left: -1px;">
+          <div onClick="{{ vm.onNew }}" style="{{ vm.styleNew }}">
             <div style="font-weight: 700; font-size: 13px;">+ new droplet</div>
-            <div style="font-size: 11.5px; color: #6a6a6a; margin-top: 3px;">Provision a fresh DO droplet on demand.</div>
+            <div style="font-size: 11.5px; color: #64748b; margin-top: 3px;">Provision a fresh DO droplet on demand.</div>
           </div>
         </div>
 
         <sc-if value="{{ vm.hostExisting }}">
           <div style="margin-top: 10px;">
-            <select onChange="{{ vm.onDroplet }}" value="{{ vm.droplet }}" class="m" style="padding: 6px; border: 1px solid #bdbdbd; font-size: 12px; background: #fff;">
+            <select onChange="{{ vm.onDroplet }}" value="{{ vm.droplet }}" class="m" style="padding: 6px; border: 1px solid #cbd5e1; font-size: 12px; background: #fff;">
               <sc-for list="{{ vm.droplets }}" as="d" hint-placeholder-count="2"><option value="{{ d }}">{{ d }}</option></sc-for>
             </select>
-            <span class="m" style="font-size: 11.5px; color: #8a8a86; margin-left: 8px;">agentspace drives Docker on it over SSH.</span>
+            <span class="m" style="font-size: 11.5px; color: #94a3b8; margin-left: 8px;">agentspace drives Docker on it over SSH.</span>
           </div>
         </sc-if>
         <sc-if value="{{ vm.hostNew }}">
           <div style="margin-top: 10px; display: flex; gap: 8px; align-items: center;">
-            <select onChange="{{ vm.onRegion }}" value="{{ vm.region }}" class="m" style="padding: 6px; border: 1px solid #bdbdbd; font-size: 12px; background: #fff;">
+            <select onChange="{{ vm.onRegion }}" value="{{ vm.region }}" class="m" style="padding: 6px; border: 1px solid #cbd5e1; font-size: 12px; background: #fff;">
               <sc-for list="{{ vm.regions }}" as="r" hint-placeholder-count="5"><option value="{{ r }}">{{ r }}</option></sc-for>
             </select>
-            <select onChange="{{ vm.onSize }}" value="{{ vm.size }}" class="m" style="padding: 6px; border: 1px solid #bdbdbd; font-size: 12px; background: #fff;">
+            <select onChange="{{ vm.onSize }}" value="{{ vm.size }}" class="m" style="padding: 6px; border: 1px solid #cbd5e1; font-size: 12px; background: #fff;">
               <sc-for list="{{ vm.sizes }}" as="z" hint-placeholder-count="4"><option value="{{ z }}">{{ z }}</option></sc-for>
             </select>
-            <span class="m" style="font-size: 11.5px; color: #8a8a86;">provisioned via doctl, then reused for future envs.</span>
+            <span class="m" style="font-size: 11.5px; color: #94a3b8;">provisioned via doctl, then reused for future envs.</span>
           </div>
         </sc-if>
       </div>
 
       <div style="margin-top: 22px;">
-        <a onClick="{{ vm.onUseKey }}" style="font-size: 13px; font-weight: 700; cursor: pointer; color: #222; text-decoration: none;">{{ vm.keyBox }} &nbsp;Reuse an existing OpenRouter key <span style="font-weight: 400; color: #8a8a86;">— optional, instead of minting a new isolated one</span></a>
+        <a onClick="{{ vm.onUseKey }}" style="font-size: 13px; font-weight: 700; cursor: pointer; color: #1f2937; text-decoration: none;">{{ vm.keyBox }} &nbsp;Reuse an existing OpenRouter key <span style="font-weight: 400; color: #94a3b8;">— optional, instead of minting a new isolated one</span></a>
         <sc-if value="{{ vm.useKey }}">
-          <input value="{{ vm.keyVal }}" onInput="{{ vm.onKey }}" class="m" placeholder="sk-or-…" style="margin-top: 8px; display: block; width: 320px; padding: 7px 9px; border: 1px solid #bdbdbd; font-size: 13px;">
+          <input value="{{ vm.keyVal }}" onInput="{{ vm.onKey }}" class="m" placeholder="sk-or-…" style="margin-top: 8px; display: block; width: 320px; padding: 7px 9px; border: 1px solid #cbd5e1; font-size: 13px;">
         </sc-if>
       </div>
 
       <div style="margin-top: 22px;">
-        <div style="font-size: 13px; font-weight: 700;">Per-agent overrides <span style="font-weight: 400; color: #8a8a86;">— optional</span></div>
-        <div style="font-size: 12px; color: #8a8a86; margin: 2px 0 10px;">Pick a model per agent (planned) and inject a replacement soul to A/B test instruction changes.</div>
-        <div style="border: 1px solid #d6d6d6;">
+        <div style="font-size: 13px; font-weight: 700;">Per-agent overrides <span style="font-weight: 400; color: #94a3b8;">— optional</span></div>
+        <div style="font-size: 12px; color: #94a3b8; margin: 2px 0 10px;">Pick a model per agent (planned) and inject a replacement soul to A/B test instruction changes.</div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; background: #fff;">
           <sc-for list="{{ vm.agents }}" as="a" hint-placeholder-count="2">
-            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 11px; border-bottom: 1px solid #ededeb;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 11px; border-bottom: 1px solid #f1f5f9;">
               <span class="m" style="font-size: 12px; font-weight: 700; flex: none; width: 70px;">{{ a.id }}</span>
-              <select onChange="{{ a.onModel }}" value="{{ a.model }}" class="m" style="flex: none; width: 160px; padding: 5px; border: 1px solid #d6d6d6; font-size: 11px; background: #fff;">
+              <select onChange="{{ a.onModel }}" value="{{ a.model }}" class="m" style="flex: none; width: 160px; padding: 5px; border: 1px solid #e5e7eb; font-size: 11px; background: #fff;">
                 <sc-for list="{{ vm.modelOpts }}" as="m" hint-placeholder-count="9"><option value="{{ m }}">{{ m }}</option></sc-for>
               </select>
-              <a onClick="{{ a.onSoul }}" class="m" style="font-size: 12px; cursor: pointer; color: #444; text-decoration: none;">{{ a.soulBox }} inject soul</a>
+              <a onClick="{{ a.onSoul }}" class="m" style="font-size: 12px; cursor: pointer; color: #475569; text-decoration: none;">{{ a.soulBox }} inject soul</a>
             </div>
           </sc-for>
         </div>
       </div>
 
       <div style="margin-top: 22px;">
-        <a onClick="{{ vm.onWake }}" style="font-size: 13px; font-weight: 700; cursor: pointer; color: #222; text-decoration: none;">{{ vm.wakeBox }} &nbsp;Wake agents now <span style="font-weight: 400; color: #8a8a86;">— send the bootstrap message and start the run immediately</span></a>
+        <a onClick="{{ vm.onWake }}" style="font-size: 13px; font-weight: 700; cursor: pointer; color: #1f2937; text-decoration: none;">{{ vm.wakeBox }} &nbsp;Wake agents now <span style="font-weight: 400; color: #94a3b8;">— send the bootstrap message and start the run immediately</span></a>
       </div>
 
-      <div style="margin-top: 24px; border-top: 1px solid #d6d6d6; padding-top: 16px; display: flex; gap: 10px; align-items: center;">
-        <button onClick="{{ vm.onFork }}" style="{{ vm.forkStyle }} padding: 9px 18px; border-radius: 2px; font-family: inherit; font-size: 13px;">Fork &amp; start env</button>
-        <button onClick="{{ vm.onCancel }}" style="background: #fff; color: #222; border: 1px solid #bdbdbd; padding: 9px 16px; border-radius: 2px; font-family: inherit; font-size: 13px; cursor: pointer;">Cancel</button>
-        <sc-if value="{{ vm.notValid }}"><span style="font-size: 12px; color: #9a9a96;">Give the env a name and a budget &gt; 0.</span></sc-if>
+      <div style="margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 16px; display: flex; gap: 10px; align-items: center;">
+        <button onClick="{{ vm.onFork }}" style="{{ vm.forkStyle }} padding: 12px 22px; border-radius: 10px; font-family: inherit; font-size: 13px; font-weight: 600;">Fork &amp; start env</button>
+        <button onClick="{{ vm.onCancel }}" style="background: #fff; color: #374151; border: 1px solid #e5e7eb; padding: 11px 16px; border-radius: 9px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer;">Cancel</button>
+        <sc-if value="{{ vm.notValid }}"><span style="font-size: 12px; color: #94a3b8;">Give the env a name and a budget &gt; 0.</span></sc-if>
       </div>
     </div>
   </sc-if>
@@ -115,7 +115,7 @@
   <!-- FORKING -->
   <sc-if value="{{ vm.isForking }}">
     <div style="margin-top: 22px; max-width: 540px;">
-      <div class="m" style="font-size: 12px; color: #8a8a86; margin-bottom: 12px;">forking {{ vm.snapTag }} → {{ vm.name }}</div>
+      <div class="m" style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">forking {{ vm.snapTag }} → {{ vm.name }}</div>
       <sc-for list="{{ vm.steps }}" as="s" hint-placeholder-count="5">
         <div class="m" style="display: flex; gap: 10px; padding: 5px 0; font-size: 12.5px;">
           <span style="flex: none; width: 16px; color: {{ s.color }};">{{ s.mark }}</span>
@@ -128,16 +128,16 @@
   <!-- DONE -->
   <sc-if value="{{ vm.isDone }}">
     <div style="margin-top: 22px; max-width: 520px;">
-      <div style="font-size: 14px; color: #1f7a3d; font-weight: 700;">✓ Forked — {{ vm.doneName }} is up</div>
-      <div class="m" style="font-size: 12px; color: #444; margin-top: 10px; border: 1px solid #ededeb; padding: 9px 12px; background: #fafafa; line-height: 1.8;">
-        <div>env <span style="color: #111; font-weight: 700;">{{ vm.doneName }}</span></div>
+      <div style="font-size: 14px; color: #059669; font-weight: 700;">✓ Forked — {{ vm.doneName }} is up</div>
+      <div class="m" style="font-size: 12px; color: #475569; margin-top: 10px; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px 13px; background: #fafbfc; line-height: 1.8;">
+        <div>env <span style="color: #0f172a; font-weight: 700;">{{ vm.doneName }}</span></div>
         <div>host {{ vm.doneHost }}</div>
         <div>budget $0.00 / ${{ vm.doneBudget }} · isolated key minted</div>
-        <div style="color: #8a8a86;">{{ vm.doneWake }}</div>
+        <div style="color: #94a3b8;">{{ vm.doneWake }}</div>
       </div>
       <div style="display: flex; gap: 10px; margin-top: 14px;">
-        <button onClick="{{ vm.onWatchForked }}" style="background: #1a1a1a; color: #fff; border: 1px solid #1a1a1a; padding: 8px 14px; border-radius: 2px; font-family: inherit; font-size: 13px; cursor: pointer;">Watch it →</button>
-        <button onClick="{{ vm.onDoneEnvs }}" style="background: #fff; color: #222; border: 1px solid #bdbdbd; padding: 8px 14px; border-radius: 2px; font-family: inherit; font-size: 13px; cursor: pointer;">View in Envs</button>
+        <button onClick="{{ vm.onWatchForked }}" style="background: #6366f1; color: #fff; border: none; padding: 9px 16px; border-radius: 9px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;">Watch it →</button>
+        <button onClick="{{ vm.onDoneEnvs }}" style="background: #fff; color: #374151; border: 1px solid #e5e7eb; padding: 9px 16px; border-radius: 9px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer;">View in Envs</button>
       </div>
     </div>
   </sc-if>

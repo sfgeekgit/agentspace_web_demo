@@ -11,13 +11,15 @@
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; height: 100%; }
-  body { background: #fff; color: #1a1a1a; font-size: 14px; line-height: 1.4; }
+  body { background: #f7f8fa; color: #0f172a; font-size: 14px; line-height: 1.45; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
   .m { font-family: ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace; }
   table { border-collapse: collapse; width: 100%; }
-  th { text-align: left; font-weight: 400; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; padding: 0 14px 7px 0; border-bottom: 1px solid #d6d6d6; }
-  td { padding: 8px 14px 8px 0; border-bottom: 1px solid #ededeb; font-size: 13px; vertical-align: top; }
+  th { text-align: left; font-weight: 600; font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: #94a3b8; padding: 0 14px 9px 0; border-bottom: 1px solid #e5e7eb; }
+  td { padding: 11px 14px 11px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; vertical-align: top; }
+  @keyframes tourPulse { 0%, 100% { background: #f0fdfa; } 50% { background: #ccfbf1; } }
 </style>
 <!-- Page data — one file per concern. Safe to regenerate from Python. -->
+<script src="./data/theme.js"></script>
 <script src="./data/nav.js"></script>
 <script src="./data/envs.js"></script>
 <script src="./data/budget.js"></script>
@@ -28,32 +30,97 @@
 <script src="./data/personas.js"></script>
 </helmet>
 
-<div style="min-height: 100vh; display: flex; background: #fff;">
+<div style="min-height: 100vh; display: flex; background: #f7f8fa;">
 
   <!-- SIDEBAR -->
-  <div style="flex: none; width: 178px; border-right: 1px solid #d6d6d6; background: #f7f7f6; display: flex; flex-direction: column;">
-    <a onClick="{{ goHome }}" style="display: block; padding: 16px 16px 14px; border-bottom: 1px solid #e2e2e0; text-decoration: none; cursor: pointer;" style-hover="background: #ededea;">
-      <div style="font-size: 17px; font-weight: 700; color: #1a1a1a;">agentspace</div>
-      <div style="font-size: 11px; color: #8a8a86; margin-top: 1px;">operator console</div>
+  <div style="flex: none; width: 190px; border-right: 1px solid #e5e7eb; background: #ffffff; display: flex; flex-direction: column;">
+    <a onClick="{{ goHome }}" style="display: block; padding: 18px 18px 16px; border-bottom: 1px solid #f1f5f9; text-decoration: none; cursor: pointer;" style-hover="background: #f8fafc;">
+      <div style="font-size: 17px; font-weight: 700; color: #0f172a; letter-spacing: -0.01em;">agentspace</div>
+      <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">operator console</div>
     </a>
     <div style="padding: 12px 0; display: flex; flex-direction: column;">
       <sc-for list="{{ nav }}" as="it" hint-placeholder-count="6">
-        <a onClick="{{ it.onClick }}" style="{{ it.style }}" style-hover="background: #ededea;">{{ it.label }}</a>
+        <a onClick="{{ it.onClick }}" style="{{ it.style }}" style-hover="background: #f1f5f9;">{{ it.label }}</a>
       </sc-for>
     </div>
-    <div class="m" style="margin-top: auto; padding: 12px 16px; border-top: 1px solid #e2e2e0; font-size: 11px; color: #8a8a86; line-height: 1.9;">
-      <div>hosts: <span style="color: #444;">3 online</span></div>
-      <div>active: <span style="color: #1f7a3d;">2</span> / 5 envs</div>
-      <div>spend/hr: <span style="color: #444;">$0.41</span></div>
+    <div class="m" style="margin-top: auto; padding: 14px 18px; border-top: 1px solid #f1f5f9; font-size: 11px; color: #94a3b8; line-height: 1.9;">
+      <div>hosts: <span style="color: #475569;">3 online</span></div>
+      <div>active: <span style="color: #059669;">2</span> / 5 envs</div>
+      <div>spend/hr: <span style="color: #475569;">$0.41</span></div>
+      <sc-if value="{{ tourOff }}">
+        <a onClick="{{ restartTour }}" style="display: inline-block; margin-top: 6px; color: #0d9488; text-decoration: underline; cursor: pointer;">↻ Restart tour</a>
+      </sc-if>
     </div>
   </div>
 
   <!-- MAIN -->
   <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: auto;">
 
+    <!-- GUIDED NUDGE — non-blocking, contextual; one-click "skip tour" hides it for good. -->
+    <sc-if value="{{ nudge.show }}">
+      <div style="display: flex; align-items: center; gap: 12px; padding: 11px 18px; background: #f0fdfa; border-bottom: 1px solid #99f6e4;">
+        <span class="m" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #0d9488; flex: none;">tour</span>
+        <span style="font-size: 12.5px; color: #0f766e; line-height: 1.4;">{{ nudge.text }}</span>
+        <a onClick="{{ nudge.onSkip }}" style="margin-left: auto; font-size: 12px; color: #0d9488; text-decoration: underline; cursor: pointer; white-space: nowrap; flex: none;">skip tour</a>
+      </div>
+    </sc-if>
+
     <!-- HOME / SPLASH — shown when no section is selected. Edit freely. -->
     <sc-if value="{{ vHome }}" hint-placeholder-val="{{ true }}">
-      <div data-screen-label="Home" style="padding: 30px 32px; color: #444; font-size: 16px; line-height: 1.6;">You are viewing the web demo. This is a semi-functional demo.<br>Please see the fully functional command-line tool on GitHub at<br><a href="https://github.com/sfgeekgit/agentspace/" target="_blank" style="color: #1a4fb4; text-decoration: none;">github.com/sfgeekgit/agentspace</a>.<br><br><br>&lt;--- or click a section to try it<br>Start with "New World" or dig into the logs of a running environment.</div>
+      <div data-screen-label="Home" style="padding: 34px;">
+        <div style="max-width: 720px;">
+
+          <!-- PRIMARY CTA -->
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+            <a onClick="{{ goNew }}" style="display: inline-flex; align-items: center; gap: 8px; background: #6366f1; color: #fff; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 10px; text-decoration: none; cursor: pointer; box-shadow: 0 8px 20px rgba(99,102,241,.28);" style-hover="background: #4f46e5;"><span style="font-size: 16px; line-height: 1;">←</span> Start with a New World</a>
+            <span style="font-size: 13px; color: #94a3b8;">or pick any section in the sidebar.</span>
+          </div>
+
+          <!-- TITLE -->
+          <h1 style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: #0f172a; margin: 34px 0 6px;">Agentspace</h1>
+          <p style="font-size: 19px; line-height: 1.4; color: #334155; margin: 0 0 4px;">A reproducible testbed for AI agents that interact.</p>
+
+          <!-- SHOVELS callout -->
+          <div style="margin-top: 22px; background: #f0f4ff; border: 1px solid #dbe3ff; border-left: 3px solid #6366f1; border-radius: 12px; padding: 18px 22px;">
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6366f1; margin-bottom: 8px;">Shovels</div>
+            <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #334155;"><i>“Empirical work on the safety of multi-principal, multi-agent deployments is bottlenecked by the need for realistic and reproducible testbeds.”</i><br><span style="display: block; margin-top: 8px; color: #64748b; font-size: 13px;">The #1 request in DeepMind's new $10M multi-agent AI safety funding call</span></p>
+          </div>
+
+          <!-- WHAT IT IS -->
+          <!-- WHAT IT IS — top -->
+          <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
+            <p style="margin: 0;"><b>Most tools test one AI agent at a time. Agentspace tests what agents do to each other.</b> Agentspace is an open-source platform for running multi-agent experiments in reproducible, forkable worlds. It exists to make the cooperation and alignment of interacting AI agents something you can observe and test empirically.</p>
+          </div>
+
+          <!-- WHAT IT IS — middle (why it matters) -->
+          <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
+            <p style="margin: 0 0 16px;">Systems to study how agents behave together are a public good that markets currently underproduce. Current incentives lead to building capable single agents for profit. Studying multi-agent cooperation is of academic interest. But that is rapidly changing.</p>
+            <p style="margin: 0;">And research is just the beachhead. Big companies want this for the same reasons the safety field does, interacting agents fail in ways you can't see coming, and the only defense is to make that behavior observable and reproducible before it reaches the world. A commercially successful Agentspace means more multi-agent systems get tested for collusion, manipulation, and runaway coordination before they ship. Incentives point the same way whoever the buyer is.</p>
+          </div>
+
+          <!-- WHAT IT IS — bottom (how it works) -->
+          <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px;">How Agentspace works</div>
+            <p style="margin: 0 0 16px;">A <b>World</b> is a self-contained environment holding one or more agents. Their memories, their messages, their instructions, and the situation they are in. You can <b>Snapshot</b> a running world at any moment, then <b>fork</b> the snapshot into a fresh copy. You can then change anything about the world, something big or as small as a single character, or nothing at all, then run it again. <b>Run → snapshot → tweak → fork → compare</b> is the whole loop.</p>
+            <p style="margin: 0 0 8px;">The platform is built from orthogonal pieces you mix and match:</p>
+            <ul style="margin: 0 0 16px; padding-left: 20px;">
+              <li style="margin-bottom: 8px;"><b>Scenarios</b> define a situation. Define the world for agents however you want. Common examples are deception games, real world tasks, iterated prisoner’s dilemma, whatever. Scenarios can be bare simple or include complex custom code.</li>
+              <li style="margin-bottom: 8px;"><b>Modules</b> add optional standard mechanics that may be useful across multiple scenarios: enforceable contracts, prediction markets, bounded secret side-channels, agent self-cloning, and more.</li>
+              <li style="margin-bottom: 0;"><b>Personas</b> set each agent’s starting character, choose a “soul” a runtime and any backend model.</li>
+            </ul>
+            <p style="margin: 0;">Everything is logged. Every message, every tool call, every thought an agent writes to its scratchpad, so you can review a run afterward or live-tail it as it happens. The most valuable findings tend to be “that’s strange... why did it keep doing that?”, and agentspace is built to surface those moments and let you re-run them to test whether the effect is real.</p>
+          </div>
+
+          <!-- DEMO NOTICE — big and clear, at the bottom -->
+          <div style="margin-top: 22px; background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 16px; padding: 22px 26px;">
+            <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #0d9488; margin-bottom: 8px;">You’re viewing the web demo</div>
+            <p style="margin: 0 0 14px; font-size: 15px; line-height: 1.6; color: #0f766e;">This is a preview, a demo of what the command line tool can do. The menu driven, <b>functional command-line tool</b> is open-source on GitHub.</p>
+            <a href="https://github.com/sfgeekgit/agentspace/" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #1f2937; color: #fff; font-size: 14px; font-weight: 600; padding: 11px 18px; border-radius: 10px; text-decoration: none;" style-hover="background: #111827;">github.com/sfgeekgit/agentspace →</a>
+            <p style="margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: #0f766e;">Open-source core originated with a short term grant from the <b>Foresight Institute</b>.<br>Independent project; ongoing.</p>
+          </div>
+
+        </div>
+      </div>
     </sc-if>
 
     <!-- LIVE CONSOLE (full width) → LiveEnvPage.dc.html -->
@@ -62,19 +129,19 @@
     </sc-if>
 
     <sc-if value="{{ vStandard }}">
-      <div style="padding: 26px 32px; max-width: 780px;">
+      <div style="padding: 30px 34px; max-width: 800px;">
 
         <sc-if value="{{ showBack }}">
-          <a onClick="{{ backClick }}" style="font-size: 12px; color: #1a4fb4; text-decoration: none; cursor: pointer;">{{ backLabel }}</a>
+          <a onClick="{{ backClick }}" style="font-size: 12px; color: #6366f1; text-decoration: none; cursor: pointer; font-weight: 500;">{{ backLabel }}</a>
         </sc-if>
-        <div style="font-size: 20px; font-weight: 700; margin-top: 8px;">{{ pageTitle }}</div>
-        <div style="font-size: 13px; color: #8a8a86; margin-top: 4px; line-height: 1.5;">{{ pageSub }}</div>
+        <div style="font-size: 22px; font-weight: 700; margin-top: 8px; letter-spacing: -0.02em; color: #0f172a;">{{ pageTitle }}</div>
+        <div style="font-size: 13px; color: #64748b; margin-top: 4px; line-height: 1.5;">{{ pageSub }}</div>
 
         <!-- SUBMENU -->
         <sc-if value="{{ vSubmenu }}">
-          <div style="margin-top: 18px; border-top: 1px solid #e2e2e0; max-width: 560px;">
+          <div style="margin-top: 20px; max-width: 560px; background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,.04);">
             <sc-for list="{{ menuItems }}" as="cmd" hint-placeholder-count="6">
-              <a onClick="{{ cmd.onClick }}" style="{{ cmd.style }}" style-hover="background: #f7f7f6;">{{ cmd.label }}<span style="color: #b6b6b2; font-weight: 400;">{{ cmd.tail }}</span></a>
+              <a onClick="{{ cmd.onClick }}" style="{{ cmd.style }}" style-hover="background: #f8fafc;">{{ cmd.label }}<span style="color: #94a3b8; font-weight: 400;">{{ cmd.tail }}</span></a>
             </sc-for>
           </div>
         </sc-if>
@@ -109,28 +176,52 @@
           <dc-import name="ForkPage" vm="{{ fork }}" hint-size="100%,420px"></dc-import>
         </sc-if>
 
-        <!-- ABOUT -->
+        <!-- ABOUT — mirrors the splash, minus the tour banner and New World CTA -->
         <sc-if value="{{ vAbout }}">
-          <div style="margin-top: 20px; max-width: 680px; font-size: 16px; line-height: 1.65; color: #333;">
+          <div style="max-width: 720px;">
 
-	       <p style="margin: 0 0 16px; ">Open-source core supported by a 2026 grant from the Foresight Institute. Independent project; ongoing.</p>
-	       <p style="">You are viewing the web demo. This is a semi-functional demo. <br>Please see the <b>fully functional command-line tool on GitHub</b> at <a href="https://github.com/sfgeekgit/agentspace/" target="_blank" style="color: #1a4fb4; text-decoration: none;">github.com/sfgeekgit/agentspace</a>.</p>
-	    
-            <p style="">agentspace is an open-source platform for running multi-agent experiments in reproducible, forkable worlds. It exists to make the cooperation and alignment of interacting AI agents something you can observe empirically. In practice it is a tool for
+            <!-- DEMO NOTICE — top of the About page -->
+            <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 16px; padding: 22px 26px;">
+              <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #0d9488; margin-bottom: 8px;">You’re viewing the web demo</div>
+              <p style="margin: 0 0 14px; font-size: 15px; line-height: 1.6; color: #0f766e;">This is a preview, a demo of what the command line tool can do. The menu driven, <b>functional command-line tool</b> is open-source on GitHub.</p>
+              <a href="https://github.com/sfgeekgit/agentspace/" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: #1f2937; color: #fff; font-size: 14px; font-weight: 600; padding: 11px 18px; border-radius: 10px; text-decoration: none;" style-hover="background: #111827;">github.com/sfgeekgit/agentspace →</a>
+              <p style="margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: #0f766e;">Open-source core originated with a short term grant from the <b>Foresight Institute</b>.<br>Independent project; ongoing.</p>
+            </div>
 
-	      spinning up many copies of an experiment in parallel — running the same situation over and over, changing one thing or nothing at all — and watching for anything interesting or surprising.</p>
-            <p style="">A <b>World</b> is a self-contained environment holding one or more agents — their memories, their messages, and the situation they are in.</p>
-            <p style=""><b>Snapshot</b> a running world at any moment, then <b>fork</b> the snapshot into a fresh copy. Change something big, or something as small as a single character, or change nothing at all — then run it again. Run twenty copies if you like. <b>Run → snapshot → tweak → fork → compare</b> is the whole loop. Each snapshot is a complete container image published to a public registry (ghcr.io), so anyone can pull a world down and reproduce or extend an experiment exactly — and no keys ever travel with it.</p>
-            <p style="margin: 0 0 8px;">The platform is built from orthogonal pieces you mix and match.</p>
-            <ul style="margin: 0 0  padding-left: 20px;">
-              <li style="margin-bottom: 8px;"><b>Scenarios</b> define a situation — a deception game, an open-ended task, an iterated prisoner’s dilemma, cooperation under scarcity. A core focus of agentspace is letting researchers create and edit their own scenarios.</li>
-              <li style="margin-bottom: 8px;"><b>Modules</b> add optional mechanics to most scenarios: enforceable contracts, prediction markets, bounded secret side-channels, the ability for agents to clone themselves, and more. Most modules combine freely with most scenarios.</li>
-              <li style="margin-bottom: 0;"><b>Personas</b> set each agent’s starting character — its starting “soul.” Most souls can be dropped into any scenario or role. Each agent runs on any backend model and inside any runtime. Mix and match any combination.</li>
-            </ul>
-            <p style="">Everything is logged — every message, every tool call, every thought an agent writes to its scratchpad. Researchers get easy access to the logs, whether reviewing them after the fact or live-tailing a run as it happens. With most scenarios and runtimes, you can also live-chat with the agents mid-run.</p>
-            <p style="">Spinning up copies or variants of a world is a single operation. agentspace handles the plumbing: securely minting a fresh API key per world, provisioning new DigitalOcean droplets on demand (or reusing existing ones, or running locally), storing and retrieving container images, and tearing it all down afterward. That leaves the researcher free to focus on designing scenarios and watching what happens.</p>
-            <p style="">This is exploratory infrastructure by design. The most valuable findings about agent behavior tend to be “that’s strange — why did it keep doing that?” rather than clean confirmations of a hypothesis. agentspace is built to surface those moments: worlds rich enough for surprising dynamics, with observability deep enough to see why a run cooperated, defected, or manipulated — then re-run it to test whether the effect is real.</p>
-            <p style="margin: 0; font-size: 14px;"><a href="https://github.com/sfgeekgit/agentspace/" target="_blank" style="color: #1a4fb4; text-decoration: none;">github.com/sfgeekgit/agentspace ›</a></p>
+            <!-- TITLE -->
+            <h1 style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: #0f172a; margin: 34px 0 6px;">Agentspace</h1>
+            <p style="font-size: 19px; line-height: 1.4; color: #334155; margin: 0 0 4px;">A reproducible testbed for AI agents that interact.</p>
+
+            <!-- SHOVELS callout -->
+            <div style="margin-top: 22px; background: #f0f4ff; border: 1px solid #dbe3ff; border-left: 3px solid #6366f1; border-radius: 12px; padding: 18px 22px;">
+              <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6366f1; margin-bottom: 8px;">Shovels</div>
+              <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #334155;"><i>“Empirical work on the safety of multi-principal, multi-agent deployments is bottlenecked by the need for realistic and reproducible testbeds.”</i><br><span style="display: block; margin-top: 8px; color: #64748b; font-size: 13px;">The #1 request in DeepMind's new $10M multi-agent AI safety funding call</span></p>
+            </div>
+
+            <!-- WHAT IT IS — top -->
+            <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
+              <p style="margin: 0;"><b>Most tools test one AI agent at a time. Agentspace tests what agents do to each other.</b> Agentspace is an open-source platform for running multi-agent experiments in reproducible, forkable worlds. It exists to make the cooperation and alignment of interacting AI agents something you can observe and test empirically.</p>
+            </div>
+
+            <!-- WHAT IT IS — middle (why it matters) -->
+            <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
+              <p style="margin: 0 0 16px;">Systems to study how agents behave together are a public good that markets currently underproduce. Current incentives lead to building capable single agents for profit. Studying multi-agent cooperation is of academic interest. But that is rapidly changing.</p>
+              <p style="margin: 0;">And research is just the beachhead. Big companies want this for the same reasons the safety field does, interacting agents fail in ways you can't see coming, and the only defense is to make that behavior observable and reproducible before it reaches the world. A commercially successful Agentspace means more multi-agent systems get tested for collusion, manipulation, and runaway coordination before they ship. Incentives point the same way whoever the buyer is.</p>
+            </div>
+
+            <!-- WHAT IT IS — bottom (how it works) -->
+            <div style="margin-top: 22px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 26px 30px; box-shadow: 0 1px 2px rgba(0,0,0,.04); color: #374151; font-size: 15px; line-height: 1.65;">
+              <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px;">How Agentspace works</div>
+            <p style="margin: 0 0 16px;">A <b>World</b> is a self-contained environment holding one or more agents. Their memories, their messages, their instructions, and the situation they are in. You can <b>Snapshot</b> a running world at any moment, then <b>fork</b> the snapshot into a fresh copy. You can then change anything about the world, something big or as small as a single character, or nothing at all, then run it again. <b>Run → snapshot → tweak → fork → compare</b> is the whole loop.</p>
+              <p style="margin: 0 0 8px;">The platform is built from orthogonal pieces you mix and match:</p>
+              <ul style="margin: 0 0 16px; padding-left: 20px;">
+                <li style="margin-bottom: 8px;"><b>Scenarios</b> define a situation. Define the world for agents however you want. Common examples are deception games, real world tasks, iterated prisoner’s dilemma, whatever. Scenarios can be bare simple or include complex custom code.</li>
+                <li style="margin-bottom: 8px;"><b>Modules</b> add optional standard mechanics that may be useful across multiple scenarios: enforceable contracts, prediction markets, bounded secret side-channels, agent self-cloning, and more.</li>
+                <li style="margin-bottom: 0;"><b>Personas</b> set each agent’s starting character, choose a “soul” a runtime and any backend model.</li>
+              </ul>
+              <p style="margin: 0;">Everything is logged. Every message, every tool call, every thought an agent writes to its scratchpad, so you can review a run afterward or live-tail it as it happens. The most valuable findings tend to be “that’s strange... why did it keep doing that?”, and agentspace is built to surface those moments and let you re-run them to test whether the effect is real.</p>
+            </div>
+
           </div>
         </sc-if>
 
@@ -142,14 +233,15 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { section: null, cmd: null, envSel: null, snapSel: null, liveEnv: null, ov: {}, forkSnap: null, fork: null, lastFork: null };
+  state = { section: null, cmd: null, envSel: null, snapSel: null, liveEnv: null, ov: {}, forkSnap: null, fork: null, lastFork: null, tourOff: false };
 
-  STATUS = { active: '#1f7a3d', dormant: '#8a6d1f', stopped: '#9a9a96', missing: '#9a3221' };
+  STATUS = { active: '#059669', dormant: '#d97706', stopped: '#94a3b8', missing: '#dc2626' };
 
   // Data lives in window.AGENTSPACE (loaded from data/*.js in <helmet>).
   // First paint may run before those scripts finish; poll until they land, then re-render.
   componentDidMount() {
-    const ready = () => { const a = window.AGENTSPACE || {}; return a.sections && a.menus && a.envs && a.snaps && a.budgetRows && a.treeData && a.liveData && a.fleet && a.runtimes && a.scenarios && a.models && a.modules && a.personas; };
+    try { if (localStorage.getItem('as_tour_off') === '1') this.setState({ tourOff: true }); } catch (e) {}
+    const ready = () => { const a = window.AGENTSPACE || {}; return a.sections && a.menus && a.envs && a.snaps && a.budgetRows && a.treeData && a.liveData && a.fleet && a.runtimes && a.scenarios && a.models && a.modules && a.personas && window.AS_THEME; };
     if (ready()) return;
     this._dataPoll = setInterval(() => { if (ready()) { clearInterval(this._dataPoll); this.forceUpdate(); } }, 40);
   }
@@ -167,101 +259,39 @@ class Component extends DCLogic {
 
   treeData() { return this.D('treeData', []); }
 
-  goWatch(envName) { this.setState({ liveEnv: envName }); }
+  goWatch(envName) { this.setState({ liveEnv: envName, liveFromFork: false }); }
 
   liveData() { return this.D('liveData', {}); }
 
-  wizRuntimes() { return this.D('runtimes', []); }
-
-  wizScenarios() { return this.D('scenarios', []); }
-
+  // Still used by the Fork form's model dropdown.
   wizModels() { return this.D('models', []); }
 
-  wizModuleDefs() { return this.D('modules', []); }
-
-  wizPersonas() { return this.D('personas', []); }
-
-  setWiz(patch) { this.setState({ wiz: { ...this.state.wiz, ...patch } }); }
-
-  wizPickScenario(s) {
-    const roster = Array.from({ length: s.min }, () => ({ model: 'claude-sonnet-4', persona: null }));
-    const modules = { ...this.state.wiz.modules };
-    (s.disallow || []).forEach((k) => { delete modules[k]; });
-    this.setWiz({ scenario: s.key, count: s.min, roster, modules, name: s.key, target: 'all' });
+  // Suggest a not-yet-taken env name from the snapshot's scenario, so the
+  // Fork form is pre-filled and forkable in one click.
+  suggestForkName(snapId) {
+    const scen = (snapId || '').split(':')[0] || 'env';
+    let base = scen.includes('_') ? scen.split('_').pop() : scen;
+    base = (base || 'env').replace(/[^a-z0-9]/gi, '').toLowerCase() || 'env';
+    const taken = new Set([
+      ...this.envs().map((e) => e.name),
+      ...Object.keys(this.liveData()),
+    ]);
+    for (let n = 2; n <= 20; n++) {
+      for (const L of ['a', 'b', 'c', 'd']) {
+        const cand = `${base}-${n}${L}`;
+        if (!taken.has(cand)) return cand;
+      }
+    }
+    return `${base}-new`;
   }
-
-  wizSetCount(n) {
-    const s = this.wizScenarios().find((x) => x.key === this.state.wiz.scenario);
-    if (!s) return;
-    const c = Math.max(s.min, Math.min(s.max, n));
-    const roster = Array.from({ length: c }, (_, i) => this.state.wiz.roster[i] || { model: 'claude-sonnet-4', persona: null });
-    this.setWiz({ count: c, roster });
-  }
-
-  wizAssignPersona(name) {
-    const w = this.state.wiz;
-    if (w.uniform || w.target === 'all') { this.setWiz({ persona: name }); return; }
-    const roster = w.roster.map((r, i) => (i === w.target ? { ...r, persona: name } : r));
-    this.setWiz({ roster });
-  }
-
-  wizToggleModule(key) {
-    const modules = { ...this.state.wiz.modules };
-    if (modules[key]) delete modules[key]; else modules[key] = true;
-    this.setWiz({ modules });
-  }
-
-  wizValid() {
-    const w = this.state.wiz;
-    const s = this.wizScenarios().find((x) => x.key === w.scenario);
-    if (!s || s.broken) return false;
-    if (w.count < s.min || w.count > s.max) return false;
-    if (!w.name.trim()) return false;
-    if (w.uniform) return !!w.persona;
-    return w.roster.slice(0, w.count).every((r) => r.persona && r.model);
-  }
-
-  wizBuildSteps() {
-    const w = this.state.wiz;
-    const mods = Object.keys(w.modules);
-    return [
-      `Resolving scenario ${w.scenario}…`,
-      'Pulling base image + 50 GB corpus layer (cached on registry)…',
-      `Writing roster: ${w.count} agent(s)…`,
-      mods.length ? `Baking modules: ${mods.map((k) => this.wizModuleDefs().find((m) => m.key === k).name).join(', ')}…` : 'No modules to bake…',
-      'Committing World Root image (docker commit)…',
-      `Tagging ghcr.io/agentspace/${w.name}:1.0…`,
-    ];
-  }
-
-  wizBuild() {
-    if (!this.wizValid()) return;
-    this.setWiz({ phase: 'building', step: 0 });
-    const total = this.wizBuildSteps().length;
-    clearInterval(this._wizTimer);
-    this._wizTimer = setInterval(() => {
-      const w = this.state.wiz;
-      if (w.step >= total - 1) { clearInterval(this._wizTimer); this.setWiz({ phase: 'done' }); }
-      else this.setWiz({ step: w.step + 1 });
-    }, 650);
-  }
-
-  wizReset() {
-    clearInterval(this._wizTimer);
-    this.setState({ wiz: this.freshWiz() });
-  }
-
-  freshWiz() {
-    return { runtime: 'OpenClaw', scenario: null, count: 0, uniform: false, model: 'claude-sonnet-4',
-      persona: 'Default', roster: [], modules: {}, vegas: { publicUsed: true, publicAsk: false },
-      name: '', query: '', target: 0, phase: 'form', step: 0 };
-  }
-
   freshFork(snapId) {
-    return { snap: snapId, name: '', budget: '2.00', host: 'localhost', droplet: 'do · sfo3-02',
+    return { snap: snapId, name: this.suggestForkName(snapId), budget: '2.00', host: 'localhost', droplet: 'do · sfo3-02',
       region: 'sfo3', size: 's-2vcpu-4gb', useKey: false, key: '', wake: true, souls: {}, models: {}, phase: 'form', step: 0 };
   }
-  startFork(snapId) { clearInterval(this._forkTimer); this.setState({ forkSnap: snapId, fork: this.freshFork(snapId), liveEnv: null }); }
+  // Forking happens within the Snaps section — highlight it in the sidebar.
+  // worldKey (optional) carries the wizard scenario so the live console can pick
+  // the matching sample log script even if the world was renamed.
+  startFork(snapId, worldKey) { clearInterval(this._forkTimer); this.setState({ section: 'snaps', cmd: null, envSel: null, snapSel: null, forkSnap: snapId, forkWorldKey: worldKey || null, fork: this.freshFork(snapId), liveEnv: null }); }
   setFork(patch) { this.setState({ fork: { ...this.state.fork, ...patch } }); }
   exitFork() { clearInterval(this._forkTimer); this.setState({ forkSnap: null, fork: null }); }
 
@@ -295,25 +325,46 @@ class Component extends DCLogic {
       const cf = this.state.fork;
       if (cf.step >= total - 1) {
         clearInterval(this._forkTimer);
-        this.setState({ lastFork: { name: cf.name, snap: cf.snap, host: this.forkHostLabel(cf), budget: cf.budget, wake: cf.wake }, fork: { ...cf, phase: 'done' } });
+        this.setState({ lastFork: { name: cf.name, snap: cf.snap, host: this.forkHostLabel(cf), budget: cf.budget, wake: cf.wake, worldKey: this.state.forkWorldKey || null }, fork: { ...cf, phase: 'done' } });
       } else this.setFork({ step: cf.step + 1 });
     }, 600);
   }
   synthLive(lf) {
     const scen = lf.snap.split(':')[0];
-    const ids = this.forkAgents(lf.snap);
     const waked = lf.wake;
+    // If this world was built from a wizard scenario, use its sample log script.
+    const scripts = (window.AGENTSPACE || {}).scenarioScripts || {};
+    const script = lf.worldKey && scripts[lf.worldKey];
+    if (script) {
+      return {
+        snap: lf.snap, host: lf.host, runtimeName: 'OpenClaw v0.9',
+        runtime: waked ? (script.runtime || '00:02:00') : '—',
+        base: waked ? 'active' : 'dormant',
+        bigCorpus: !!script.corpus, corpus: script.corpus || '', corpusName: script.corpusName || '',
+        modulesLabel: script.modulesLabel || '—',
+        agents: script.agents.map((a) => ({ ...a, awake: waked && a.awake !== false })),
+        budget: script.budget,
+        hasMarket: !!script.market, market: script.market || {},
+        hasContracts: !!script.contracts, contracts: script.contracts || [],
+        hasScore: !!script.hasScore, score: script.score || { rows: [] },
+        stream: waked ? script.stream : [],
+      };
+    }
+    const srcSnap = this.snaps().find((x) => `${x.scen}:${x.ver}` === lf.snap);
+    const corpus = srcSnap && srcSnap.corpus ? srcSnap.corpus : '';
+    const corpusName = srcSnap && srcSnap.corpusName ? srcSnap.corpusName : '';
+    const ids = this.forkAgents(lf.snap);
     const pct = Math.round(100 / ids.length);
     return {
       snap: lf.snap, host: lf.host, runtimeName: 'OpenClaw v0.9', runtime: waked ? '00:00:14' : '—',
-      base: waked ? 'active' : 'dormant', bigCorpus: scen === 'tragedy_commons', modulesLabel: '—',
-      agents: ids.map((id) => ({ id, persona: '—', model: 'claude-sonnet-4', awake: waked, pct, spent: '$0.00' })),
+      base: waked ? 'active' : 'dormant', bigCorpus: !!corpus, corpus, corpusName, modulesLabel: '—',
+      agents: ids.map((id) => ({ id, persona: '—', model: 'claude-sonnet-5', awake: waked, pct, spent: '$0.00' })),
       budget: { used: '$0.00', limit: `$${lf.budget}`, remaining: `$${lf.budget}`, low: false, splits: ids.map(() => ({ w: pct - 2, c: '#999' })) },
       hasMarket: false, hasContracts: false, hasScore: false,
       stream: waked ? [
-        { time: '00:00:02', who: '', meta: '', label: 'system', target: '', arg: '  gateway started · isolated key minted', body: '', body2: '', bg: '#f7f7f6', pad: '6px' },
+        { time: '00:00:02', who: '', meta: '', label: 'system', target: '', arg: '  gateway started · isolated key minted', body: '', body2: '', bg: '#f8fafc', pad: '6px' },
         { time: '00:00:05', who: '', meta: '', label: 'system', target: '', arg: `  bootstrap sent to ${ids.length} agent(s)`, body: '', body2: '', bg: '', pad: '6px' },
-        { time: '00:00:14', who: ids[0], meta: ' · turn 1 · claude-sonnet-4', label: '', target: '', arg: '', body: '', body2: '', bg: '#f7f7f6', pad: '9px' },
+        { time: '00:00:14', who: ids[0], meta: ' · turn 1 · claude-sonnet-5', label: '', target: '', arg: '', body: '', body2: '', bg: '#f8fafc', pad: '9px' },
         { time: '00:00:16', who: ids[0], meta: ' · thinking…', label: '', target: '', arg: '', body: '', body2: '', bg: '', pad: '9px' },
       ] : [],
     };
@@ -322,30 +373,22 @@ class Component extends DCLogic {
   renderVals() {
     const st = this.state;
     const cur = st.section;
-    if (!st.wiz) st.wiz = this.freshWiz();
-    // Pre-select tragedy_commons on load so every wizard step is visible without a click.
-    if (st.wiz && !st.wiz.scenario) {
-      const def0 = this.wizScenarios().find((x) => x.key === 'tragedy_commons');
-      if (def0 && !def0.broken) {
-        st.wiz.scenario = def0.key;
-        const cnt0 = Math.max(def0.min, Math.min(def0.max, 4));
-        st.wiz.count = cnt0;
-        st.wiz.roster = Array.from({ length: cnt0 }, () => ({ model: 'claude-sonnet-4', persona: 'Default' }));
-        st.wiz.name = def0.key;
-        (def0.disallow || []).forEach((k) => { delete st.wiz.modules[k]; });
-      }
-    }
+    const T = window.AS_THEME || {};
+
+    const tourActive = !this.state.tourOff;
+    const atHome = !cur && !this.state.liveEnv && !this.state.forkSnap;
+    const suggestNav = (tourActive && atHome) ? 'new' : null;
 
     const nav = this.sections().map((s) => {
       const on = cur === s.key;
+      const nudgeMe = suggestNav === s.key && !on;
       return {
         label: s.label,
-        onClick: () => this.setState({ section: s.key, cmd: null, envSel: null, snapSel: null, liveEnv: null }),
-        style: `padding: 6px 16px; text-decoration: none; cursor: pointer; `
-          + `color: ${on ? '#111' : '#333'}; font-weight: ${on ? '700' : '400'}; `
-          + `background: ${on ? '#e9e9e6' : 'transparent'}; `
-          + `border-left: 3px solid ${on ? '#1a1a1a' : 'transparent'}; `
-          + `padding-left: ${on ? '13px' : '16px'};`,
+        onClick: () => this.setState({ section: s.key, cmd: null, envSel: null, snapSel: null, liveEnv: null, liveFromFork: false }),
+        style: `display:block; margin:1px 12px; padding:7px 12px; border-radius:8px; text-decoration:none; cursor:pointer; font-size:13px; `
+          + `color:${nudgeMe ? '#0f766e' : (on ? '#fff' : T.body)}; font-weight:${on ? '600' : '500'}; `
+          + `background:${on ? T.ac : (nudgeMe ? '#f0fdfa' : 'transparent')};`
+          + (nudgeMe ? ` box-shadow: inset 0 0 0 1px #99f6e4; animation: tourPulse 2.2s ease-in-out infinite;` : ''),
       };
     });
 
@@ -381,10 +424,10 @@ class Component extends DCLogic {
         label: it.label,
         tail: it.tail || '',
         onClick: wired ? (() => this.setState({ cmd: it.label, envSel: null, snapSel: null })) : (() => {}),
-        style: `display: block; padding: 8px 6px; text-decoration: none; border-bottom: 1px solid #ededeb; `
+        style: `display:flex; align-items:center; justify-content:space-between; gap:10px; padding:13px 16px; text-decoration:none; border-bottom:1px solid ${T.lineSoft}; font-size:13.5px; `
           + (wired
-            ? `cursor: pointer; color: #222; font-weight: 400;`
-            : `cursor: default; color: #bdbdb8; font-weight: 400;`),
+            ? `cursor:pointer; color:${T.ink}; font-weight:500;`
+            : `cursor:default; color:#cbd5e1; font-weight:400;`),
       };
     }) : [];
 
@@ -421,23 +464,23 @@ class Component extends DCLogic {
         name: e.name, snap: e.snap, status: e.status,
         meta: watchable ? `${e.host} · runtime ${e.runtime} · ${e.agents}` : `${e.host} · container stopped — cannot watch`,
         statusColor: this.STATUS[e.status],
-        nameColor: watchable ? '#111' : '#9a9a96',
+        nameColor: watchable ? T.ink : T.faint,
         onClick: watchable ? (() => this.goWatch(e.name)) : (() => {}),
-        style: `padding: 11px 8px; border-bottom: 1px solid #ededeb; `
-          + (watchable ? `cursor: pointer;` : `cursor: default; opacity: 0.6;`),
+        style: `display:block; padding:13px 16px; border-bottom:1px solid ${T.lineSoft}; `
+          + (watchable ? `cursor: pointer;` : `cursor: default; opacity: 0.5;`),
       };
     });
 
     // budget
     const budgetRows = this.budgetRows().map((b) => ({
-      ...b, remColor: b.low ? '#9a3221' : '#555',
+      ...b, remColor: b.low ? T.missing : T.body,
     }));
 
     // snaps table
     const snapRows = this.snaps().map((s) => ({
       scen: s.scen, ver: s.ver, runtime: s.runtime, model: s.model, parent: s.parent, created: s.created,
       notes: s.notes === 0 ? '0' : (s.dirty ? `${s.notes} *` : `${s.notes}`),
-      notesColor: s.dirty ? '#8a6d1f' : '#9a9a96',
+      notesColor: s.dirty ? T.dormant : T.faint,
       onClick: st.cmd === 'Fork snap'
         ? (() => this.startFork(`${s.scen}:${s.ver}`))
         : (() => this.setState({ snapSel: `${s.scen}:${s.ver}` })),
@@ -457,6 +500,10 @@ class Component extends DCLogic {
           { k: 'Children', v: s.children }, { k: 'Message', v: s.msg },
           { k: 'Runtime', v: s.runtime }, { k: 'Model', v: s.model },
           { k: 'Agents', v: s.agents }, { k: 'Modules', v: s.modules },
+          ...(s.corpus ? [
+            { k: 'Corpus', v: `${s.corpus}${s.corpusName ? ' · ' + s.corpusName : ''} — shared base layer`, color: '#d97706' },
+            { k: 'This snap', v: `${s.snapDiff || '+ small'} diff only — corpus not recopied`, color: '#059669' },
+          ] : []),
           { k: 'Budget at snap', v: s.budget },
         ],
       };
@@ -465,10 +512,10 @@ class Component extends DCLogic {
     // tree
     const treeLines = this.treeData().map((t) => {
       if (t.scen) {
-        return { style: `margin-top: ${t.gap ? '14px' : '0'}`, weight: '700', color: '#1a1a1a',
+        return { style: `margin-top: ${t.gap ? '14px' : '0'}`, weight: '700', color: T.ink,
           head: t.scen, date: '', msg: '', dirty: '' };
       }
-      return { style: 'margin-top: 0', weight: '700', color: '#222',
+      return { style: 'margin-top: 0', weight: '700', color: '#334155',
         head: `${t.b}${t.ver}  `, date: `${t.d}  `, msg: t.m, dirty: t.dirty ? '   *' : '' };
     });
 
@@ -476,8 +523,8 @@ class Component extends DCLogic {
     const hostRows = this.D('fleet', []).map((h) => ({
       name: h.name, status: h.status, envs: h.envs, meta: h.meta,
       statusColor: this.STATUS.active,
-      nameColor: h.cta ? '#1a4fb4' : '#111',
-      style: `padding: 11px 8px; border-bottom: 1px solid #ededeb; ${h.cta ? 'cursor: pointer;' : ''}`,
+      nameColor: h.cta ? T.ac : T.ink,
+      style: `display:block; padding:13px 16px; border-bottom:1px solid ${T.lineSoft}; ${h.cta ? 'cursor: pointer;' : ''}`,
     }));
 
     // live view
@@ -492,21 +539,25 @@ class Component extends DCLogic {
           name: st.liveEnv, snap: d.snap, host: d.host, runtimeName: d.runtimeName, runtime: d.runtime,
           statusLabel: dormant ? 'dormant' : 'active', statusColor: dormant ? this.STATUS.dormant : this.STATUS.active,
           modulesLabel: d.modulesLabel || '—', agentCount: d.agents.length, bigCorpus: d.bigCorpus,
+          corpusSize: d.corpus || '', corpusName: d.corpusName || '',
+          corpusNote: d.corpus ? `corpus ${d.corpus}${d.corpusName ? ' · ' + d.corpusName : ''} — one shared layer; forks and snapshots reference it, they don’t copy it.` : '',
           dormant, hasStream: d.stream.length > 0,
           toggleLabel: dormant ? 'Wake agents' : 'Sleep',
           onToggle: () => { const ov = { ...this.state.ov }; ov[st.liveEnv] = dormant ? 'active' : 'dormant'; this.setState({ ov }); },
-          onBack: () => this.setState({ liveEnv: null }),
-          backLabel: cur === 'watch' ? '‹ Watch' : '‹ Envs',
+          onBack: () => this.setState(st.liveFromFork
+            ? { liveEnv: null, liveFromFork: false, section: 'envs', cmd: 'List envs' }
+            : { liveEnv: null }),
+          backLabel: st.liveFromFork ? '‹ Envs' : (cur === 'watch' ? '‹ Watch' : '‹ Envs'),
           agents: d.agents.map((a) => {
             const awake = a.awake && !dormant;
             return { id: a.id, persona: a.persona, model: a.model, pct: a.pct, spent: a.spent,
               dotColor: awake ? this.STATUS.active : this.STATUS.dormant,
               dot: awake ? '●' : '○',
               statusText: `${a.model} · ${awake ? 'awake' : 'dormant'}`,
-              nameColor: awake ? '#111' : '#6a6a6a', barColor: awake ? '#555' : '#bdbdbd' };
+              nameColor: awake ? T.ink : T.muted, barColor: awake ? T.ac : '#cbd5e1' };
           }),
           budget: { used: d.budget.used, limit: d.budget.limit, remaining: d.budget.remaining,
-            remColor: d.budget.low ? '#9a3221' : '#555', splits: d.budget.splits },
+            remColor: d.budget.low ? T.missing : T.body, splits: d.budget.splits },
           hasMarket: d.hasMarket, market: d.market || {},
           hasContracts: d.hasContracts, contracts: d.contracts || [],
           hasScore: d.hasScore, score: d.score || { rows: [] },
@@ -515,101 +566,8 @@ class Component extends DCLogic {
       }
     }
 
-    // wizard
-    let wiz = null;
-    if (view === 'new') {
-      const w = st.wiz;
-      const scn = this.wizScenarios().find((x) => x.key === w.scenario) || null;
-      const valid = this.wizValid();
-      const personas = this.wizPersonas();
-      const q = (w.query || '').toLowerCase();
-      const filtered = personas.filter((p) => !q || p.name.toLowerCase().includes(q) || p.summary.toLowerCase().includes(q));
-      const targetPersonaName = (w.uniform || w.target === 'all') ? w.persona : (w.roster[w.target] && w.roster[w.target].persona);
-      const preview = personas.find((p) => p.name === targetPersonaName) || null;
-      const moduleDefs = this.wizModuleDefs();
-      const toggleBtn = (on) => `padding: 6px 12px; border-radius: 2px; font-family: inherit; font-size: 12px; cursor: pointer; border: 1px solid ${on ? '#1a1a1a' : '#bdbdbd'}; background: ${on ? '#1a1a1a' : '#fff'}; color: ${on ? '#fff' : '#222'};`;
-      wiz = {
-        phase: w.phase,
-        isForm: w.phase === 'form', isBuilding: w.phase === 'building', isDone: w.phase === 'done',
-        perAgent: !w.uniform, notValid: !valid,
-        uniformStyle: toggleBtn(w.uniform), perAgentStyle: toggleBtn(!w.uniform),
-        vegasUsedBox: w.vegas.publicUsed ? '☑' : '☐', vegasAskBox: w.vegas.publicAsk ? '☑' : '☐',
-        onForkBuilt: () => this.startFork(`${w.name}:1.0`),
-        runtimes: this.wizRuntimes().map((r) => ({
-          key: r.key, desc: r.desc, sel: w.runtime === r.key,
-          style: `border: 1px solid ${w.runtime === r.key ? '#1a1a1a' : '#d6d6d6'}; background: ${w.runtime === r.key ? '#f3f3f1' : '#fff'}; padding: 11px 13px; cursor: pointer; margin-bottom: -1px;`,
-          onClick: () => this.setWiz({ runtime: r.key }),
-        })),
-        scenarios: this.wizScenarios().map((s) => ({
-          name: s.name, desc: s.desc, broken: !!s.broken,
-          range: s.broken ? '' : `${s.min}–${s.max} agents`,
-          sel: w.scenario === s.key,
-          nameColor: s.broken ? '#9a3221' : (w.scenario === s.key ? '#111' : '#222'),
-          style: `border: 1px solid ${w.scenario === s.key ? '#1a1a1a' : '#d6d6d6'}; background: ${w.scenario === s.key ? '#f3f3f1' : (s.broken ? '#fbf7f6' : '#fff')}; padding: 10px 13px; margin-bottom: -1px; cursor: ${s.broken ? 'not-allowed' : 'pointer'};`,
-          onClick: s.broken ? (() => {}) : (() => this.wizPickScenario(s)),
-        })),
-        hasScenario: !!scn,
-        count: w.count, range: scn ? `${scn.min}–${scn.max}` : '—',
-        onDec: () => this.wizSetCount(w.count - 1), onInc: () => this.wizSetCount(w.count + 1),
-        uniform: w.uniform,
-        onUniform: () => this.setWiz({ uniform: true, target: 'all' }),
-        onPerAgent: () => this.setWiz({ uniform: false, target: 0 }),
-        model: w.model, models: this.wizModels(),
-        onModel: (e) => this.setWiz({ model: e.target.value }),
-        query: w.query, onQuery: (e) => this.setWiz({ query: e.target.value }),
-        personaList: filtered.map((p) => ({
-          name: p.name, summary: p.summary, sel: p.name === targetPersonaName,
-          style: `display: block; padding: 7px 9px; cursor: pointer; border-bottom: 1px solid #ededeb; background: ${p.name === targetPersonaName ? '#eef1f4' : '#fff'};`,
-          onClick: () => this.wizAssignPersona(p.name),
-        })),
-        preview,
-        targetLabel: (w.uniform || w.target === 'all') ? 'all agents' : `agent ${w.target + 1}`,
-        roster: w.roster.slice(0, w.count).map((r, i) => ({
-          idx: i, label: `agent ${i + 1}`,
-          model: r.model, persona: r.persona || '— pick —',
-          personaColor: r.persona ? '#222' : '#9a3221',
-          isTarget: !w.uniform && w.target === i,
-          rowStyle: `display: flex; align-items: center; gap: 10px; padding: 8px 9px; border-bottom: 1px solid #ededeb; background: ${(!w.uniform && w.target === i) ? '#eef1f4' : '#fff'};`,
-          onPick: () => this.setWiz({ target: i }),
-          onModel: (e) => { const roster = w.roster.map((x, j) => (j === i ? { ...x, model: e.target.value } : x)); this.setWiz({ roster }); },
-        })),
-        modules: moduleDefs.map((m) => {
-          const disallowed = scn && (scn.disallow || []).includes(m.key);
-          const on = !!w.modules[m.key] && !disallowed;
-          return {
-            key: m.key, name: m.name, desc: disallowed ? `disallowed by ${scn.name}` : m.desc,
-            on, disallowed,
-            box: on ? '☑' : (disallowed ? '☒' : '☐'),
-            style: `border: 1px solid ${on ? '#1a1a1a' : '#d6d6d6'}; background: ${on ? '#f3f3f1' : (disallowed ? '#f5f5f3' : '#fff')}; padding: 10px 13px; margin-bottom: -1px; cursor: ${disallowed ? 'not-allowed' : 'pointer'}; opacity: ${disallowed ? '0.55' : '1'};`,
-            onClick: disallowed ? (() => {}) : (() => this.wizToggleModule(m.key)),
-          };
-        }),
-        vegasOn: !!w.modules.vegas && !(scn && (scn.disallow || []).includes('vegas')),
-        vegasPublicUsed: w.vegas.publicUsed, vegasPublicAsk: w.vegas.publicAsk,
-        onVegasUsed: () => this.setWiz({ vegas: { ...w.vegas, publicUsed: !w.vegas.publicUsed } }),
-        onVegasAsk: () => this.setWiz({ vegas: { ...w.vegas, publicAsk: !w.vegas.publicAsk } }),
-        name: w.name, onName: (e) => this.setWiz({ name: e.target.value }),
-        valid,
-        buildStyle: valid
-          ? 'background: #1a1a1a; color: #fff; border: 1px solid #1a1a1a; cursor: pointer;'
-          : 'background: #f3f3f1; color: #b0b0ab; border: 1px solid #dcdcd9; cursor: not-allowed;',
-        onBuild: () => this.wizBuild(),
-        summary: [
-          { k: 'Runtime', v: w.runtime }, { k: 'Scenario', v: w.scenario || '—' },
-          { k: 'Agents', v: String(w.count) },
-          { k: 'Roster', v: w.uniform ? `${w.model} · ${w.persona || '—'} (all)` : 'per-agent (see above)' },
-          { k: 'Modules', v: Object.keys(w.modules).length ? Object.keys(w.modules).map((k) => moduleDefs.find((m) => m.key === k).name).join(', ') : '—' },
-          { k: 'World name', v: w.name || '—' },
-        ],
-        steps: this.wizBuildSteps().map((s, i) => ({
-          text: s, done: i < w.step, active: i === w.step,
-          mark: i < w.step ? '✓' : (i === w.step ? '⟳' : '·'),
-          color: i < w.step ? '#1f7a3d' : (i === w.step ? '#111' : '#bdbdb8'),
-        })),
-        doneName: `${w.name}:1.0`, doneTag: `ghcr.io/agentspace/${w.name}:1.0`,
-        onReset: () => this.wizReset(),
-      };
-    }
+    // wizard — the new NewWorldPage is self-contained; it only needs a fork handoff.
+    let wiz = { onFork: (name, worldKey) => this.startFork(`${name}:1.0`, worldKey) };
 
     // fork
     let fork = null;
@@ -619,7 +577,7 @@ class Component extends DCLogic {
       const scen = f.snap.split(':')[0];
       const bigCorpus = scen === 'tragedy_commons';
       const ids = this.forkAgents(f.snap);
-      const hostCard = (key, on) => `border: 1px solid ${on ? '#1a1a1a' : '#d6d6d6'}; background: ${on ? '#f3f3f1' : '#fff'}; padding: 12px 13px; cursor: pointer; flex: 1; min-width: 0;`;
+      const hostCard = (key, on) => `border:${on ? '1.5px' : '1px'} solid ${on ? T.ac : T.line}; background:${on ? T.acTint : '#fff'}; padding:12px 13px; cursor:pointer; flex:1; min-width:0; border-radius:11px;`;
       fork = {
         phase: f.phase,
         isForm: f.phase === 'form', isForking: f.phase === 'forking', isDone: f.phase === 'done',
@@ -657,25 +615,24 @@ class Component extends DCLogic {
         modelOpts: ['inherit', ...this.wizModels()],
         valid: this.forkValid(f),
         forkStyle: this.forkValid(f)
-          ? 'background: #1a1a1a; color: #fff; border: 1px solid #1a1a1a; cursor: pointer;'
-          : 'background: #f3f3f1; color: #b0b0ab; border: 1px solid #dcdcd9; cursor: not-allowed;',
+          ? `background:${T.ac}; color:#fff; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(99,102,241,.3);`
+          : `background:${T.acTint}; color:#a5b4fc; border:none; cursor:not-allowed;`,
         notValid: !this.forkValid(f),
         onFork: () => this.forkRun(),
         onCancel: () => this.exitFork(),
         steps: this.forkSteps(f).map((s, i) => ({
           text: s, mark: i < f.step ? '✓' : (i === f.step ? '⟳' : '·'),
-          color: i < f.step ? '#1f7a3d' : (i === f.step ? '#111' : '#bdbdb8'),
+          color: i < f.step ? T.active : (i === f.step ? T.ink : '#cbd5e1'),
         })),
         doneName: f.name, doneHost: this.forkHostLabel(f), doneBudget: f.budget, doneWake: f.wake ? 'agents waking' : 'agents dormant',
-        onWatchForked: () => this.setState({ forkSnap: null, fork: null, liveEnv: f.name }),
+        onWatchForked: () => this.setState({ forkSnap: null, fork: null, section: 'watch', cmd: null, envSel: null, snapSel: null, liveEnv: f.name, liveFromFork: true }),
         onDoneEnvs: () => this.setState({ forkSnap: null, fork: null, section: 'envs', cmd: 'List envs' }),
       };
     }
 
     // page header
     const titles = {
-      new: ['New world', 'Build a new World Root from a scenario + roster. Runs a docker build; never starts an env.'],
-      about: ['About agentspace', 'A testbed for studying how AI agents cooperate.'],
+      new: ['New world', 'Build a new World Root from a scenario + roster. Runs a docker build; start it running in the next step.'],
       tree: ['Version tree', 'Per-scenario snapshot lineage, rooted at X.0 (the never-run World Root).'],
       fleet: ['Fleet', 'Hosts that envs run on. Multi-host by design.'],
       watch: ['Watch', 'Pick a running env to observe live. Stopped envs can\u2019t be watched.'],
@@ -702,10 +659,29 @@ class Component extends DCLogic {
     else if (view === 'watch' && cur === 'envs') { showBack = true; backLabel = '\u2039 Envs'; backClick = () => this.setState({ cmd: null }); }
     else if (view === 'fork') { showBack = true; backLabel = '\u2039 Cancel'; backClick = () => this.exitFork(); }
 
+    const skipTour = () => { try { localStorage.setItem('as_tour_off', '1'); } catch (e) {} this.setState({ tourOff: true }); };
+    let nudgeText = '';
+    if (tourActive) {
+      if (view === 'blank') nudgeText = 'New here? Build your first world to see how agentspace works. Open “New world” in the sidebar.';
+      else if (view === 'new') nudgeText = 'Pick a world, then scroll down to staff it with agents and build it. When it’s built, “Fork it” to start a live run.';
+      else if (view === 'fork') {
+        const ph = st.fork && st.fork.phase;
+        if (ph === 'forking') nudgeText = 'Spinning up the container\u2026';
+        else if (ph === 'done') nudgeText = 'It\u2019s live. Hit \u201cWatch it\u201d to observe the agents in real time.';
+        else nudgeText = 'Choose where it runs and start it \u2014 next you\u2019ll watch the agents live.';
+      }
+      else if (view === 'live') nudgeText = 'This is live observation \u2014 watch agents think, message each other, and spend the shared budget. Explore freely.';
+      else if (view === 'watch') nudgeText = 'Pick a running env to watch its agents live.';
+    }
+    const nudge = { show: !!nudgeText, text: nudgeText, onSkip: skipTour };
+
     return {
-      nav,
+      nav, nudge,
+      tourOff: this.state.tourOff,
+      restartTour: () => { try { localStorage.removeItem('as_tour_off'); } catch (e) {} this.setState({ tourOff: false }); },
       vHome: view === 'blank', notBlank: view !== 'blank',
       goHome: () => this.setState({ section: null, cmd: null, envSel: null, snapSel: null, liveEnv: null, forkSnap: null, fork: null }),
+      goNew: () => this.setState({ section: 'new', cmd: null, envSel: null, snapSel: null, liveEnv: null, forkSnap: null, fork: null }),
       vSubmenu: view === 'submenu',
       vEnvTable: view === 'envTable', vEnvDetail: view === 'envDetail',
       vSnapTable: view === 'snapTable', vSnapDetail: view === 'snapDetail',

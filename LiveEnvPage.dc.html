@@ -10,6 +10,9 @@
 <helmet>
 <style>
   .m { font-family: ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace; }
+  @keyframes logIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  @keyframes livePulse { 0%, 100% { opacity: 0.35; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1); } }
+  @keyframes caretBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 </style>
 </helmet>
 
@@ -18,26 +21,27 @@
 <div style="display: flex; flex-direction: column; min-height: 100vh;">
 
   <!-- header -->
-  <div style="padding: 14px 20px; border-bottom: 1px solid #d6d6d6;">
-    <a onClick="{{ vm.onBack }}" style="font-size: 12px; color: #1a4fb4; text-decoration: none; cursor: pointer;">{{ vm.backLabel }}</a>
+  <div style="padding: 14px 20px; border-bottom: 1px solid #e5e7eb;">
+    <a onClick="{{ vm.onBack }}" style="font-size: 12px; color: #6366f1; text-decoration: none; cursor: pointer;">{{ vm.backLabel }}</a>
     <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 6px;">
       <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;">
         <span style="font-size: 22px; font-weight: 700;">{{ vm.name }}</span>
         <span style="font-size: 13px; color: {{ vm.statusColor }};">● {{ vm.statusLabel }}</span>
-        <span class="m" style="font-size: 13px; color: #555;">runtime {{ vm.runtime }}</span>
+        <span class="m" style="font-size: 13px; color: #475569;">runtime {{ vm.runtime }}</span>
       </div>
       <div style="display: flex; gap: 8px;">
-        <button onClick="{{ vm.onToggle }}" style="background: #fff; border: 1px solid #bdbdbd; padding: 6px 12px; border-radius: 2px; cursor: pointer; color: #222; font-family: inherit; font-size: 13px;" style-hover="background: #f0f0ee;">{{ vm.toggleLabel }}</button>
-        <button style="background: #fff; border: 1px solid #bdbdbd; padding: 6px 12px; border-radius: 2px; cursor: pointer; color: #222; font-family: inherit; font-size: 13px;" style-hover="background: #f0f0ee;">Take snap</button>
-        <button style="background: #fff; border: 1px solid #cdbcb8; padding: 6px 12px; border-radius: 2px; cursor: pointer; color: #9a3221; font-family: inherit; font-size: 13px;" style-hover="background: #faf0ee;">Kill</button>
+        <button onClick="{{ vm.onToggle }}" style="background: #fff; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 8px; cursor: pointer; color: #1f2937; font-family: inherit; font-size: 13px;" style-hover="background: #f1f5f9;">{{ vm.toggleLabel }}</button>
+        <button style="background: #fff; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 8px; cursor: pointer; color: #1f2937; font-family: inherit; font-size: 13px;" style-hover="background: #f1f5f9;">Take snap</button>
+        <button style="background: #fff; border: 1px solid #fecaca; padding: 6px 12px; border-radius: 8px; cursor: pointer; color: #dc2626; font-family: inherit; font-size: 13px;" style-hover="background: #fef2f2;">Kill</button>
       </div>
     </div>
-    <div class="m" style="display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 12px; font-size: 11.5px; color: #8a8a86;">
-      <span>snap <span style="color: #333;">{{ vm.snap }}</span></span>
-      <span>host <span style="color: #333;">{{ vm.host }}</span></span>
-      <span>runtime <span style="color: #333;">{{ vm.runtimeName }}</span></span>
-      <span>agents <span style="color: #333;">{{ vm.agentCount }}</span></span>
-      <span>modules <span style="color: #333;">{{ vm.modulesLabel }}</span></span>
+    <div class="m" style="display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 12px; font-size: 11.5px; color: #94a3b8;">
+      <span>snap <span style="color: #374151;">{{ vm.snap }}</span></span>
+      <span>host <span style="color: #374151;">{{ vm.host }}</span></span>
+      <span>runtime <span style="color: #374151;">{{ vm.runtimeName }}</span></span>
+      <span>agents <span style="color: #374151;">{{ vm.agentCount }}</span></span>
+      <span>modules <span style="color: #374151;">{{ vm.modulesLabel }}</span></span>
+      <sc-if value="{{ vm.bigCorpus }}"><span>corpus <span style="color: #d97706;">{{ vm.corpusSize }} shared</span></span></sc-if>
     </div>
   </div>
 
@@ -45,106 +49,254 @@
   <div style="flex: 1; display: flex; min-height: 0;">
 
     <!-- roster -->
-    <div style="flex: none; width: 232px; border-right: 1px solid #d6d6d6; padding: 14px 16px; overflow: auto;">
-      <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 10px;">Agents — share 1 budget</div>
+    <div style="flex: none; width: 232px; border-right: 1px solid #e5e7eb; padding: 14px 16px; overflow: auto;">
+      <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #94a3b8; margin-bottom: 10px;">Agents — share 1 budget</div>
       <sc-for list="{{ vm.agents }}" as="a" hint-placeholder-count="3">
-        <div style="border-top: 1px solid #e2e2e0; padding: 11px 0;">
+        <div style="border-top: 1px solid #f1f5f9; padding: 11px 0;">
           <div style="display: flex; align-items: baseline; gap: 7px;">
             <span style="font-size: 11px; color: {{ a.dotColor }};">{{ a.dot }}</span>
             <span class="m" style="font-weight: 700; color: {{ a.nameColor }};">{{ a.id }}</span>
-            <span style="margin-left: auto; font-style: italic; color: #6a6a6a;">{{ a.persona }}</span>
+            <span style="margin-left: auto; font-style: italic; color: #64748b;">{{ a.persona }}</span>
           </div>
-          <div class="m" style="font-size: 11px; color: #8a8a86; margin: 6px 0 5px;">{{ a.statusText }}</div>
-          <div style="height: 3px; background: #e6e6e3;"><div style="width: {{ a.pct }}%; height: 100%; background: {{ a.barColor }};"></div></div>
-          <div class="m" style="font-size: 11px; color: #8a8a86; margin-top: 4px;">spent {{ a.spent }}</div>
+          <div class="m" style="font-size: 11px; color: #94a3b8; margin: 6px 0 5px;">{{ a.statusText }}</div>
+          <div style="height: 3px; background: #e5e7eb;"><div style="width: {{ a.pct }}%; height: 100%; background: {{ a.barColor }};"></div></div>
+          <div class="m" style="font-size: 11px; color: #94a3b8; margin-top: 4px;">spent {{ a.spent }}</div>
         </div>
       </sc-for>
-      <div style="border-top: 1px solid #e2e2e0; padding-top: 11px; font-size: 11px; color: #9a9a96; line-height: 1.6;">Agents interact only via messaging. Memory, workspace and scratchpad are private to each.</div>
+      <div style="border-top: 1px solid #f1f5f9; padding-top: 11px; font-size: 11px; color: #94a3b8; line-height: 1.6;">Agents interact only via messaging. Memory, workspace and scratchpad are private to each.</div>
     </div>
 
     <!-- stream -->
     <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;">
-      <div style="display: flex; align-items: center; gap: 16px; padding: 10px 18px; border-bottom: 1px solid #d6d6d6; font-size: 13px;">
-        <span style="font-weight: 700; border-bottom: 2px solid #1a1a1a; padding-bottom: 9px; margin-bottom: -11px;">Everything</span>
-        <span style="color: #6a6a6a;">Gateway</span>
-        <span style="color: #6a6a6a;">Messages</span>
-        <span style="color: #6a6a6a;">Budget</span>
+      <div style="display: flex; align-items: center; gap: 16px; padding: 10px 18px; border-bottom: 1px solid #e5e7eb; font-size: 13px;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+          <span onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</span>
+        </sc-for>
       </div>
       <sc-if value="{{ vm.dormant }}">
-        <div style="padding: 12px 18px; background: #faf6ec; border-bottom: 1px solid #ece3cc; font-size: 12.5px; color: #8a6d1f;">Agents dormant — gateway stopped. Wake to resume the run.</div>
+        <div style="padding: 12px 18px; background: #fff7ed; border-bottom: 1px solid #fed7aa; font-size: 12.5px; color: #d97706;">Agents dormant — gateway stopped. Wake to resume the run.</div>
       </sc-if>
-      <div class="m" style="flex: 1; overflow: auto; font-size: 12.5px; line-height: 1.5;">
-        <sc-for list="{{ vm.stream }}" as="e" hint-placeholder-count="8">
-          <div style="display: flex; gap: 12px; padding: {{ e.pad }} 18px; background: {{ e.bg }};">
-            <span style="flex: none; color: #a0a09c; width: 60px;">{{ e.time }}</span>
+      <div ref="{{ setScroll }}" class="m" style="flex: 1; overflow: auto; font-size: 12.5px; line-height: 1.5;">
+        <sc-for list="{{ visible }}" as="e" hint-placeholder-count="8">
+          <div style="display: flex; gap: 12px; padding: {{ e.pad }} 18px; background: {{ e.bg }}; animation: logIn 0.45s ease both;">
+            <span style="flex: none; color: #94a3b8; width: 60px;">{{ e.time }}</span>
             <div style="min-width: 0;">
-              <span style="font-weight: 700;">{{ e.who }}</span><span style="color: #9a9a96;">{{ e.meta }}</span><span style="color: #9a9a96;">{{ e.label }}</span><span style="font-weight: 700;">{{ e.target }}</span><span style="color: #333;">{{ e.arg }}</span>
-              <sc-if value="{{ e.body }}"><div style="color: #333; margin-top: 1px;">{{ e.body }}</div></sc-if>
-              <sc-if value="{{ e.body2 }}"><div style="color: #6a6a6a; margin-top: 1px;">{{ e.body2 }}</div></sc-if>
+              <span style="font-weight: 700;">{{ e.who }}</span><span style="color: #94a3b8;">{{ e.meta }}</span><span style="color: #94a3b8;">{{ e.label }}</span><span style="font-weight: 700;">{{ e.target }}</span><span style="color: #374151;">{{ e.arg }}</span>
+              <sc-if value="{{ e.body }}"><div style="color: #374151; margin-top: 1px;">{{ e.body }}</div></sc-if>
+              <sc-if value="{{ e.body2 }}"><div style="color: #64748b; margin-top: 1px;">{{ e.body2 }}</div></sc-if>
             </div>
           </div>
         </sc-for>
+        <sc-if value="{{ emptyFilter }}">
+          <div style="padding: 16px 18px; color: #94a3b8; font-size: 12px;">No {{ filterLabel }} events in this run.</div>
+        </sc-if>
+        <sc-if value="{{ liveActive }}">
+          <div style="display: flex; gap: 12px; padding: 8px 18px 14px;">
+            <span style="flex: none; width: 60px;"></span>
+            <span style="display: inline-flex; align-items: center; gap: 8px; color: #94a3b8; font-size: 11.5px;">
+              <span style="width: 7px; height: 7px; border-radius: 50%; background: #059669; animation: livePulse 1.4s ease-in-out infinite;"></span>
+              streaming live<span style="color: #059669; animation: caretBlink 1s steps(1) infinite;">▍</span>
+            </span>
+          </div>
+        </sc-if>
       </div>
-      <div class="m" style="padding: 9px 18px; border-top: 1px solid #d6d6d6; font-size: 12px; color: #8a8a86; display: flex; gap: 18px;">
-        <span style="color: #1a4fb4; cursor: pointer;">exec ›</span>
+      <div class="m" style="padding: 9px 18px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #94a3b8; display: flex; gap: 18px;">
+        <span style="color: #6366f1; cursor: pointer;">exec ›</span>
         <span>watch: agents · gateway · everything</span>
-        <span style="margin-left: auto; color: #1a4fb4; cursor: pointer;">replay run</span>
-        <span style="color: #1a4fb4; cursor: pointer;">diff fork</span>
+        <span style="margin-left: auto; color: #6366f1; cursor: pointer;">replay run</span>
+        <span style="color: #6366f1; cursor: pointer;">diff fork</span>
       </div>
     </div>
 
     <!-- budget + modules -->
-    <div style="flex: none; width: 256px; border-left: 1px solid #d6d6d6; padding: 14px 16px; overflow: auto;">
-      <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 8px;">Shared budget</div>
+    <div style="flex: none; width: 256px; border-left: 1px solid #e5e7eb; padding: 14px 16px; overflow: auto;">
+      <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px;">Shared budget</div>
       <div style="display: flex; align-items: baseline; gap: 8px;">
         <span class="m" style="font-size: 24px; font-weight: 700;">{{ vm.budget.used }}</span>
-        <span class="m" style="font-size: 12px; color: #8a8a86;">/ {{ vm.budget.limit }} limit</span>
+        <span class="m" style="font-size: 12px; color: #94a3b8;">/ {{ vm.budget.limit }} limit</span>
       </div>
-      <div style="height: 8px; background: #e6e6e3; margin: 9px 0 5px; display: flex; border: 1px solid #dadad7;">
+      <div style="height: 8px; background: #e5e7eb; margin: 9px 0 5px; display: flex; border: 1px solid #e5e7eb;">
         <sc-for list="{{ vm.budget.splits }}" as="s" hint-placeholder-count="3">
           <div style="width: {{ s.w }}%; background: {{ s.c }};"></div>
         </sc-for>
       </div>
-      <div class="m" style="font-size: 11px; color: #8a8a86;">remaining <span style="color: {{ vm.budget.remColor }};">{{ vm.budget.remaining }}</span> · shared by {{ vm.agentCount }}</div>
+      <div class="m" style="font-size: 11px; color: #94a3b8;">remaining <span style="color: {{ vm.budget.remColor }};">{{ vm.budget.remaining }}</span> · shared by {{ vm.agentCount }}</div>
 
       <sc-if value="{{ vm.hasMarket }}">
-        <div style="border-top: 1px solid #e2e2e0; margin-top: 16px; padding-top: 14px;">
-          <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 9px;">Prediction market</div>
-          <div class="m" style="font-size: 12px; color: #444; line-height: 1.9;">
+        <div style="border-top: 1px solid #f1f5f9; margin-top: 16px; padding-top: 14px;">
+          <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #94a3b8; margin-bottom: 9px;">Prediction market</div>
+          <div class="m" style="font-size: 12px; color: #475569; line-height: 1.9;">
             <div style="display: flex; justify-content: space-between;"><span>cooperate</span><span>{{ vm.market.coop }}</span></div>
-            <div style="height: 3px; background: #e6e6e3; margin: 1px 0 6px;"><div style="width: {{ vm.market.coopW }}%; height: 100%; background: #555;"></div></div>
+            <div style="height: 3px; background: #e5e7eb; margin: 1px 0 6px;"><div style="width: {{ vm.market.coopW }}%; height: 100%; background: #475569;"></div></div>
             <div style="display: flex; justify-content: space-between;"><span>defect</span><span>{{ vm.market.defect }}</span></div>
-            <div style="height: 3px; background: #e6e6e3; margin: 1px 0 0;"><div style="width: {{ vm.market.defectW }}%; height: 100%; background: #999;"></div></div>
+            <div style="height: 3px; background: #e5e7eb; margin: 1px 0 0;"><div style="width: {{ vm.market.defectW }}%; height: 100%; background: #999;"></div></div>
           </div>
         </div>
       </sc-if>
 
       <sc-if value="{{ vm.hasContracts }}">
-        <div style="border-top: 1px solid #e2e2e0; margin-top: 16px; padding-top: 14px;">
-          <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 9px;">Enforceable contracts</div>
+        <div style="border-top: 1px solid #f1f5f9; margin-top: 16px; padding-top: 14px;">
+          <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #94a3b8; margin-bottom: 9px;">Enforceable contracts</div>
           <sc-for list="{{ vm.contracts }}" as="c" hint-placeholder-count="1">
-            <div class="m" style="font-size: 12px; color: #444; line-height: 1.6;">{{ c.id }} &nbsp;{{ c.parties }}<div style="color: #8a8a86;">{{ c.terms }} · <span style="color: #1f7a3d;">{{ c.status }}</span></div></div>
+            <div class="m" style="font-size: 12px; color: #475569; line-height: 1.6;">{{ c.id }} &nbsp;{{ c.parties }}<div style="color: #94a3b8;">{{ c.terms }} · <span style="color: #059669;">{{ c.status }}</span></div></div>
           </sc-for>
         </div>
       </sc-if>
 
       <sc-if value="{{ vm.hasScore }}">
-        <div style="border-top: 1px solid #e2e2e0; margin-top: 16px; padding-top: 14px;">
-          <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; margin-bottom: 9px;">Scenario state · round {{ vm.score.round }}</div>
+        <div style="border-top: 1px solid #f1f5f9; margin-top: 16px; padding-top: 14px;">
+          <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #94a3b8; margin-bottom: 9px;">Scenario state · round {{ vm.score.round }}</div>
           <sc-for list="{{ vm.score.rows }}" as="r" hint-placeholder-count="2">
-            <div class="m" style="font-size: 12px; color: #444; display: flex; justify-content: space-between; line-height: 1.9;"><span>{{ r.agent }}</span><span style="font-weight: 700;">{{ r.val }}</span></div>
+            <div class="m" style="font-size: 12px; color: #475569; display: flex; justify-content: space-between; line-height: 1.9;"><span>{{ r.agent }}</span><span style="font-weight: 700;">{{ r.val }}</span></div>
           </sc-for>
-          <div class="m" style="font-size: 11px; color: #9a9a96; margin-top: 6px;">{{ vm.score.note }}</div>
+          <div class="m" style="font-size: 11px; color: #94a3b8; margin-top: 6px;">{{ vm.score.note }}</div>
         </div>
       </sc-if>
 
       <sc-if value="{{ vm.bigCorpus }}">
-        <div class="m" style="border-top: 1px solid #e2e2e0; margin-top: 16px; padding-top: 12px; font-size: 11px; color: #8a8a86; line-height: 1.7;">corpus 50 GB shared — forks and snapshots reference it, they don’t copy it.</div>
+        <div style="border-top: 1px solid #f1f5f9; margin-top: 16px; padding-top: 14px;">
+          <div style="font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #94a3b8; margin-bottom: 7px;">World corpus</div>
+          <div class="m" style="font-size: 13px; font-weight: 700; color: #d97706;">{{ vm.corpusSize }} <span style="font-weight: 400; color: #94a3b8;">{{ vm.corpusName }}</span></div>
+          <div class="m" style="font-size: 11px; color: #94a3b8; line-height: 1.6; margin-top: 5px;">{{ vm.corpusNote }}</div>
+        </div>
       </sc-if>
     </div>
 
   </div>
 </div>
 </x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  // `shown` counts how many lines of the FULL stream have been revealed over
+  // time. It only ever grows. `filter` changes which of those revealed lines
+  // are displayed — it never resets or restarts the reveal.
+  state = { shown: 0, filter: 'everything' };
+
+  TABS = [
+    ['everything', 'Everything'],
+    ['thinking', 'Thinking'],
+    ['gateway', 'Gateway'],
+    ['messages', 'Messages'],
+  ];
+
+  // Gap (ms) to wait BEFORE revealing line i. 0 = appears together with the
+  // previous line (a burst). Pattern loops for streams longer than the array.
+  GAPS = [0, 0, 1200, 2600, 300, 300, 2400, 1500, 400, 3000, 1800, 500, 500, 2200];
+  gapFor(i) { return i === 0 ? 200 : this.GAPS[(i - 1) % this.GAPS.length]; }
+
+  componentDidMount() {
+    this._key = this.envKey();
+    this.startReveal();
+  }
+  componentWillUnmount() { clearTimeout(this._t); }
+
+  componentDidUpdate() {
+    const k = this.envKey();
+    if (k !== this._key) {
+      // Switched to a different env — restart the live feed.
+      this._key = k;
+      clearTimeout(this._t);
+      this.setState({ shown: 0, filter: 'everything' }, () => this.startReveal());
+      return;
+    }
+    // Keep the feed pinned to the newest line while it streams in.
+    if (this.state.filter === 'everything') this.scrollDown();
+  }
+
+  // Reveal lines of the full stream one at a time on a variable schedule.
+  startReveal() {
+    clearTimeout(this._t);
+    const total = this.stream().length;
+    const tick = () => {
+      this.setState((s) => {
+        const n = s.shown + 1;
+        if (n < total) this._t = setTimeout(tick, this.gapFor(n));
+        return { shown: n };
+      });
+    };
+    if (total > 0) this._t = setTimeout(tick, this.gapFor(0));
+  }
+
+  envKey() {
+    const vm = this.props.vm || {};
+    // Keyed on the env NAME only — sleeping/waking the same env must not reset
+    // the log playback, just pause/resume the live tail (see liveActive).
+    return vm.name || '';
+  }
+
+  stream() {
+    const raw = (this.props.vm && this.props.vm.stream) || [];
+    // A thinking line always belongs to an agent. If the data omits `who`
+    // (happens on some envs' first thinking turn), inherit the most recent
+    // agent seen above it so the attribution is never blank.
+    let last = '';
+    return raw.map((e) => {
+      if (e.who) last = e.who;
+      const isThink = (e.label || '').toLowerCase().includes('think') || (e.meta || '').toLowerCase().includes('think');
+      if (isThink && !e.who && last) {
+        const label = (e.label || '').trim() === 'thinking' ? ' · thinking' : e.label;
+        return { ...e, who: last, label };
+      }
+      return e;
+    });
+  }
+
+  // Tag each log line with the tabs it belongs to.
+  cats(e) {
+    const lab = (e.label || '').toLowerCase();
+    const t = ((e.label || '') + ' ' + (e.arg || '') + ' ' + (e.body || '') + ' ' + (e.body2 || '') + ' ' + (e.target || '')).toLowerCase();
+    const meta = (e.meta || '').toLowerCase();
+    const out = [];
+    if (lab.includes('think') || meta.includes('think')) out.push('thinking');
+    if (lab.includes('msg')) out.push('messages');
+    if (lab.includes('system') || lab.includes('market') || lab.includes('tool') || lab.includes('gateway') || lab.includes('contract') || t.includes('contract') || t.includes('gateway')) out.push('gateway');
+    return out;
+  }
+
+  // Already-revealed lines, then filtered by the active tab.
+  revealed() { return this.stream().slice(0, this.state.shown); }
+  matches(e, f) { return f === 'everything' || this.cats(e).includes(f); }
+
+  setFilter(f) {
+    if (f === this.state.filter) return;
+    this.setState({ filter: f }); // pure display filter — reveal keeps running
+  }
+
+  setScroll = (el) => { this.scrollEl = el; };
+  scrollDown() { if (this.scrollEl) this.scrollEl.scrollTop = this.scrollEl.scrollHeight; }
+
+  renderVals() {
+    const vm = this.props.vm || {};
+    const filter = this.state.filter;
+    const visible = this.revealed().filter((e) => this.matches(e, filter));
+    const allRevealed = this.state.shown >= this.stream().length && this.stream().length > 0;
+
+    const tabs = this.TABS.map(([key, label]) => {
+      const on = filter === key;
+      return {
+        key, label,
+        onClick: () => this.setFilter(key),
+        style: `padding-bottom: 9px; margin-bottom: -11px; cursor: pointer; `
+          + (on
+            ? `font-weight: 700; color: #0f172a; border-bottom: 2px solid #0f172a;`
+            : `font-weight: 400; color: #64748b;`),
+      };
+    });
+
+    const labelOf = (this.TABS.find((t) => t[0] === filter) || [, 'Everything'])[1].toLowerCase();
+
+    return {
+      vm,
+      tabs,
+      visible,
+      setScroll: this.setScroll,
+      // The pulsing live tail shows while lines are still streaming in.
+      liveActive: !allRevealed && !vm.dormant && vm.hasStream,
+      emptyFilter: visible.length === 0 && allRevealed && !vm.dormant,
+      filterLabel: labelOf,
+    };
+  }
+}
+</script>
 </body>
 </html>

@@ -11,8 +11,8 @@
 <style>
   .m { font-family: ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace; }
   table { border-collapse: collapse; width: 100%; }
-  th { text-align: left; font-weight: 400; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #8a8a86; padding: 0 14px 7px 0; border-bottom: 1px solid #d6d6d6; }
-  td { padding: 8px 14px 8px 0; border-bottom: 1px solid #ededeb; font-size: 13px; vertical-align: top; }
+  th { text-align: left; font-weight: 400; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #94a3b8; padding: 0 14px 7px 0; border-bottom: 1px solid #e5e7eb; }
+  td { padding: 8px 14px 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; vertical-align: top; }
 </style>
 </helmet>
 
@@ -28,51 +28,51 @@
       </tr></thead>
       <tbody>
         <sc-for list="{{ vm.rows }}" as="e" hint-placeholder-count="5">
-          <tr onClick="{{ e.onClick }}" style="cursor: pointer;" style-hover="background: #f7f7f6;">
+          <tr onClick="{{ e.onClick }}" style="cursor: pointer;" style-hover="background: #f8fafc;">
             <td style="font-weight: 700;">{{ e.name }}</td>
-            <td class="m" style="color: #555;">{{ e.snap }}</td>
-            <td class="m" style="color: #555;">{{ e.host }}</td>
+            <td class="m" style="color: #475569;">{{ e.snap }}</td>
+            <td class="m" style="color: #475569;">{{ e.host }}</td>
             <td class="m"><span style="color: {{ e.statusColor }};">{{ e.status }}</span></td>
-            <td class="m" style="color: #555;">{{ e.started }}</td>
-            <td class="m" style="color: #555;">{{ e.runtime }}</td>
-            <td class="m" style="color: #555;">{{ e.used }}</td>
-            <td class="m" style="color: #555;">{{ e.limit }}</td>
+            <td class="m" style="color: #475569;">{{ e.started }}</td>
+            <td class="m" style="color: #475569;">{{ e.runtime }}</td>
+            <td class="m" style="color: #475569;">{{ e.used }}</td>
+            <td class="m" style="color: #475569;">{{ e.limit }}</td>
           </tr>
         </sc-for>
       </tbody>
     </table>
-    <div style="font-size: 12px; color: #9a9a96; margin-top: 12px;">Click a row to inspect it.</div>
+    <div style="font-size: 12px; color: #94a3b8; margin-top: 12px;">Click a row to inspect it.</div>
   </sc-if>
 
   <!-- DETAIL PANEL -->
   <sc-if value="{{ vm.isDetail }}">
-    <div style="margin-top: 18px; border: 1px solid #d6d6d6; max-width: 600px;">
+    <sc-if value="{{ vm.detail.watchable }}">
+      <a onClick="{{ vm.detail.onWatch }}" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; background: #6366f1; color: #fff; font-size: 15px; font-weight: 600; padding: 13px 22px; border-radius: 10px; text-decoration: none; cursor: pointer; box-shadow: 0 8px 20px rgba(99,102,241,.28);" style-hover="background: #4f46e5;">▶ Watch logs live</a>
+    </sc-if>
+    <div style="margin-top: 18px; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; max-width: 600px; background: #fff;">
       <sc-for list="{{ vm.detail.rows }}" as="r" hint-placeholder-count="9">
-        <div style="display: flex; border-bottom: 1px solid #ededeb;">
-          <div style="flex: none; width: 116px; padding: 7px 12px; color: #8a8a86; font-size: 12px; background: #fafafa; border-right: 1px solid #ededeb;">{{ r.k }}</div>
-          <div class="m" style="padding: 7px 12px; font-size: 12.5px; color: #333; min-width: 0; word-break: break-all;"><span style="color: {{ r.color }};">{{ r.v }}</span></div>
+        <div style="display: flex; border-bottom: 1px solid #f1f5f9;">
+          <div style="flex: none; width: 116px; padding: 7px 12px; color: #94a3b8; font-size: 12px; background: #fafbfc; border-right: 1px solid #f1f5f9;">{{ r.k }}</div>
+          <div class="m" style="padding: 7px 12px; font-size: 12.5px; color: #374151; min-width: 0; word-break: break-all;"><span style="color: {{ r.color }};">{{ r.v }}</span></div>
         </div>
       </sc-for>
     </div>
-    <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center;">
-      <sc-if value="{{ vm.detail.watchable }}">
-        <a onClick="{{ vm.detail.onWatch }}" style="font-size: 13px; color: #1a4fb4; text-decoration: none; cursor: pointer;">Watch logs ›</a>
-      </sc-if>
-      <span style="font-size: 12px; color: #9a9a96;">{{ vm.detail.hint }}</span>
-    </div>
+    <sc-if value="{{ vm.detail.hint }}">
+      <div style="margin-top: 14px; font-size: 12px; color: #94a3b8;">{{ vm.detail.hint }}</div>
+    </sc-if>
   </sc-if>
 
   <!-- WATCH PICKER -->
   <sc-if value="{{ vm.isWatch }}">
-    <div style="margin-top: 18px; border-top: 1px solid #e2e2e0; max-width: 620px;">
+    <div style="margin-top: 18px; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; max-width: 620px; background: #fff;">
       <sc-for list="{{ vm.watchRows }}" as="w" hint-placeholder-count="5">
-        <div onClick="{{ w.onClick }}" style="{{ w.style }}" style-hover="background: #f7f7f6;">
+        <div onClick="{{ w.onClick }}" style="{{ w.style }}" style-hover="background: #f8fafc;">
           <div style="display: flex; align-items: baseline; gap: 10px;">
             <span class="m" style="font-weight: 700; color: {{ w.nameColor }};">{{ w.name }}</span>
-            <span class="m" style="font-size: 12px; color: #8a8a86;">{{ w.snap }}</span>
+            <span class="m" style="font-size: 12px; color: #94a3b8;">{{ w.snap }}</span>
             <span class="m" style="font-size: 12px; margin-left: auto; color: {{ w.statusColor }};">{{ w.status }}</span>
           </div>
-          <div class="m" style="font-size: 11.5px; color: #9a9a96; margin-top: 3px;">{{ w.meta }}</div>
+          <div class="m" style="font-size: 11.5px; color: #94a3b8; margin-top: 3px;">{{ w.meta }}</div>
         </div>
       </sc-for>
     </div>
